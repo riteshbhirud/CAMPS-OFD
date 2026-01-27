@@ -1,0 +1,29 @@
+# Julia generated files
+*.jl.cov
+*.jl.mem
+Manifest.toml
+
+# Build artifacts
+/docs/build/
+/deps/deps.jl
+/deps/build.log
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Coverage
+/coverage/
+lcov.info
+results/complete_benchmark/aggregated_20260110_175358.csv
+results/complete_benchmark/results_20260110_175358.csv
