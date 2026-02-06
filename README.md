@@ -2,7 +2,7 @@
 
 Julia implementation of Clifford-Augmented Matrix Product States for simulating Clifford+T circuits.
 
-## What is this?
+## About this repo
 
 This package implements the CAMPS representation from [Liu & Clark (arXiv:2412.17209)](https://arxiv.org/abs/2412.17209). The basic idea is to represent quantum states as:
 
@@ -14,12 +14,6 @@ where C is a Clifford operator and |ψ_MPS⟩ is an MPS. The key insight is that
 
 We use [QuantumClifford.jl](https://github.com/QuantumSavory/QuantumClifford.jl) for the Clifford tracking and [ITensorMPS.jl](https://github.com/ITensor/ITensorMPS.jl) for the MPS backend.
 
-## Installation
-
-```julia
-using Pkg
-Pkg.develop(path="/path/to/CAMPS.jl")
-```
 
 ## Basic usage
 
