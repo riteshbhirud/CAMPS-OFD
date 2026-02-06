@@ -6,46 +6,46 @@ MODEL PERFORMANCE:
 ----------------------------------------------------------------------
 
 Random Forest:
-  Accuracy:  0.8846
-  Precision: 0.7843
-  Recall:    0.9091
-  F1 Score:  0.8421
-  ROC AUC:   0.9662
+  Accuracy:  0.9149
+  Precision: 0.8537
+  Recall:    0.7778
+  F1 Score:  0.8140
+  ROC AUC:   0.9659
 
 Gradient Boosting:
-  Accuracy:  0.8769
-  Precision: 0.7917
-  Recall:    0.8636
-  F1 Score:  0.8261
-  ROC AUC:   0.9585
+  Accuracy:  0.9043
+  Precision: 0.8000
+  Recall:    0.8000
+  F1 Score:  0.8000
+  ROC AUC:   0.9651
 
 Logistic Regression:
-  Accuracy:  0.8154
-  Precision: 0.7273
-  Recall:    0.7273
-  F1 Score:  0.7273
-  ROC AUC:   0.9091
+  Accuracy:  0.8191
+  Precision: 0.7619
+  Recall:    0.3556
+  F1 Score:  0.4848
+  ROC AUC:   0.7789
 
 SVM (RBF):
-  Accuracy:  0.9231
-  Precision: 0.8696
-  Recall:    0.9091
-  F1 Score:  0.8889
-  ROC AUC:   0.9617
+  Accuracy:  0.8138
+  Precision: 0.7273
+  Recall:    0.3556
+  F1 Score:  0.4776
+  ROC AUC:   0.8105
 
 
 FEATURE IMPORTANCE (Random Forest):
 ----------------------------------------------------------------------
- 1. t_density                      0.208145
- 2. n_t_gates                      0.172844
- 3. spatial_uniformity             0.097632
- 4. n_gates                        0.076525
- 5. family_encoded                 0.076398
- 6. std_clifford_depth             0.066145
- 7. avg_light_cone_width           0.062263
- 8. depth_variance                 0.055999
- 9. avg_clifford_depth             0.053641
-10. max_clifford_depth             0.042383
-11. max_light_cone_width           0.041200
-12. min_clifford_depth             0.029925
-13. n_qubits                       0.016901
+ 1. t_density                      0.244658
+ 2. n_t_gates                      0.119000
+ 3. n_gates                        0.095763
+ 4. depth_variance                 0.086651
+ 5. avg_clifford_depth             0.083687
+ 6. min_clifford_depth             0.079163
+ 7. avg_light_cone_width           0.077009
+ 8. family_encoded                 0.073306
+ 9. spatial_uniformity             0.048744
+10. max_light_cone_width           0.033811
+11. n_qubits                       0.022119
+12. max_clifford_depth             0.021078
+13. std_clifford_depth             0.015010
