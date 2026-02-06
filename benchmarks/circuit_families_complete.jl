@@ -22,19 +22,6 @@ Phase 2 Families (5 advanced NISQ algorithms):
 14. VQE Hardware-Efficient - Variational eigensolver (Kandala et al. Nature 2017)
 
 
-Usage:
-    include("circuit_families_complete.jl")
-
-    # List all families
-    list_all_families()
-
-    # Phase 1 usage (Dict parameters)
-    bv = BernsteinVaziraniCircuit()
-    circuit = generate_circuit(bv, Dict(:n_qubits => 6, :n_t_gates => 4, :seed => 1000))
-
-    # Phase 2 usage (keyword arguments)
-    qft = QFTFamily()
-    circuit = generate_circuit(qft; n_qubits=5, density=:medium, seed=1234)
 """
 
 using CAMPS
