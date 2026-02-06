@@ -1,3 +1,5 @@
+# LLM Usage
+LLMs were used for generating detailled docustrings, descriptions (from my rough writings) and "pretty prints" in files like the benchmark to make life a bit easier
 # CAMPS.jl
 
 Julia implementation of Clifford-Augmented Matrix Product States for simulating Clifford+T circuits.
