@@ -596,7 +596,6 @@ function find_optimal_clifford_for_bond(mps::MPS, bond::Int, sites::AbstractVect
 
     effective_algorithm = use_fast_algorithm ? algorithm : :naive
 
-    ==========================================================================
 
     if effective_algorithm == :equation19 && use_full_search
         base_tensor = precompute_renyi2_base_tensor(mps, bond, sites)
@@ -613,7 +612,6 @@ function find_optimal_clifford_for_bond(mps::MPS, bond::Int, sites::AbstractVect
         return (best_index, initial_entropy, best_entropy)
     end
 
-    ==========================================================================
 
     rho = extract_two_site_rdm(mps, site1, site2)
 
@@ -630,8 +628,6 @@ function find_optimal_clifford_for_bond(mps::MPS, bond::Int, sites::AbstractVect
 
         return (best_index, initial_entropy, best_entropy)
     end
-
-    ==========================================================================
 
     if use_full_search
         if cache !== nothing
