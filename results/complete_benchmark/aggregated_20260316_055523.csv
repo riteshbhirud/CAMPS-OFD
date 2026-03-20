@@ -1,0 +1,7 @@
+family,n_qubits,n_t_gates,mean_ofd_rate,std_ofd_rate,mean_chi,mean_nu,mean_S2,mean_runtime,n_samples
+Quantum Fourier Transform,4,18,0.5,0.0,1.0,3.0,0.0,1.7680789132912953,24
+Quantum Fourier Transform,6,45,0.4000000000000001,5.73316704659901e-17,1.0,4.0,0.0,153.56945361196995,16
+Quantum Fourier Transform,6,36,0.5,0.0,1.0,5.0,0.0,0.2012351155281067,8
+Quantum Fourier Transform,8,84,0.5,0.0,1.0,7.0,0.0,0.8782026767730713,8
+Quantum Fourier Transform,8,75,0.5,0.0,1.0,7.0,0.0,3.1972371339797974,8
+Quantum Fourier Transform,8,54,0.4285714285714285,5.93439168722175e-17,1.0,6.0,0.0,48.54807037115097,8

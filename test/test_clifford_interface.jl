@@ -296,3 +296,81 @@ end
         @test get_pauli_at(P_twisted, 1) == :X
     end
 end
+
+@testset "Gate Resolution — all gate types" begin
+    @testset "resolve_clifford_gate for CZ, SWAP, Sdag" begin
+        cz = CZGate(1, 2)
+        resolved = resolve_clifford_gate(cz)
+        @test length(resolved) == 1
+        @test resolved[1] == sCPHASE(1, 2)
+
+        sw = SWAPGate(1, 2)
+        resolved = resolve_clifford_gate(sw)
+        @test length(resolved) == 1
+        @test resolved[1] == sSWAP(1, 2)
+
+        sdg = SdagGate(1)
+        resolved = resolve_clifford_gate(sdg)
+        @test length(resolved) == 1
+        @test resolved[1] == sInvPhase(1)
+    end
+
+    @testset "resolve_clifford_gate for X, Y, Z" begin
+        for (GateFn, expected) in [(XGate, sX), (YGate, sY), (ZGate, sZ)]
+            g = GateFn(2)
+            resolved = resolve_clifford_gate(g)
+            @test length(resolved) == 1
+            @test resolved[1] == expected(2)
+        end
+    end
+end
+
+@testset "Phase correctness in conjugation" begin
+
+    @testset "H†ZH = +X (positive phase)" begin
+        C = initialize_clifford(1)
+        apply_clifford_gate!(C, sHadamard(1))
+        P = commute_pauli_through_clifford(single_z(1, 1), C)
+        @test get_pauli_at(P, 1) == :X
+        @test get_pauli_phase(P) ≈ 1.0 + 0.0im atol=1e-10
+    end
+
+    @testset "H†XH = +Z (positive phase)" begin
+        C = initialize_clifford(1)
+        apply_clifford_gate!(C, sHadamard(1))
+        P = commute_pauli_through_clifford(single_x(1, 1), C)
+        @test get_pauli_at(P, 1) == :Z
+        @test get_pauli_phase(P) ≈ 1.0 + 0.0im atol=1e-10
+    end
+
+    @testset "S†XS = -Y (negative phase)" begin
+        C = initialize_clifford(1)
+        apply_clifford_gate!(C, sPhase(1))
+        P = commute_pauli_through_clifford(single_x(1, 1), C)
+        @test get_pauli_at(P, 1) == :Y
+        @test get_pauli_phase(P) ≈ -1.0 + 0.0im atol=1e-10
+    end
+
+    @testset "S†YS = +X (positive phase)" begin
+        C = initialize_clifford(1)
+        apply_clifford_gate!(C, sPhase(1))
+        P_y = create_pauli_string([:Y], 1)
+        P = commute_pauli_through_clifford(P_y, C)
+        @test get_pauli_at(P, 1) == :X
+        @test get_pauli_phase(P) ≈ 1.0 + 0.0im atol=1e-10
+    end
+end
+
+@testset "apply_inverse_gates! with non-self-inverse gate" begin
+    C = initialize_clifford(2)
+    gates = [sPhase(1)]
+    apply_clifford_gates!(C, gates)
+    apply_inverse_gates!(C, gates)
+
+    P = commute_pauli_through_clifford(single_z(2, 1), C)
+    @test get_pauli_at(P, 1) == :Z
+    @test get_pauli_at(P, 2) == :I
+
+    P2 = commute_pauli_through_clifford(single_x(2, 1), C)
+    @test get_pauli_at(P2, 1) == :X
+end

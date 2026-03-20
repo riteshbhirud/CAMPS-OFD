@@ -1,7 +1,5 @@
 module CAMPS
 
-#                           EXTERNAL DEPENDENCIES                              #
-
 using QuantumClifford
 using QuantumClifford: PauliOperator, Stabilizer, Destabilizer, MixedDestabilizer, CliffordOperator
 using QuantumClifford: single_x, single_y, single_z
@@ -25,26 +23,19 @@ using ITensorMPS: inner, sample, add
 using LinearAlgebra
 using Random
 
-#==============================================================================#
-#                     SOURCE FILES             #
-#==============================================================================#
-
 include("types.jl")
 include("utils.jl")
 
 include("clifford_interface.jl")
 include("mps_interface.jl")
 include("gf2.jl")
+include("gf2_circuit_analysis.jl")
 
 include("two_qubit_cliffords.jl")
 include("ofd.jl")
 include("obd.jl")
 
 include("simulation.jl")
-
-#==============================================================================#
-#                          STATE INITIALIZATION                                #
-#==============================================================================#
 
 """
     initialize!(state::CAMPSState) -> CAMPSState
@@ -98,7 +89,7 @@ end
 """
     ensure_initialized!(state::CAMPSState) -> CAMPSState
 
-Ensure a CAMPSState is initialized, initializing if needed.
+Initialize a CAMPSState if not already initialized.
 
 # Arguments
 - `state::CAMPSState`: CAMPS state
@@ -112,10 +103,6 @@ function ensure_initialized!(state::CAMPSState)::CAMPSState
     end
     return state
 end
-
-#==============================================================================#
-#                       HIGH-LEVEL STATE OPERATIONS                            #
-#==============================================================================#
 
 """
     get_bond_dimension(state::CAMPSState) -> Int
@@ -191,15 +178,7 @@ function compute_twisted_pauli(state::CAMPSState, axis::Symbol, qubit::Int)::Pau
     return commute_pauli_through_clifford(P, state.clifford)
 end
 
-#==============================================================================#
-#                  RE-EXPORT QUANTUMCLIFFORD TYPES                             #
-#==============================================================================#
-
 export PauliOperator, Stabilizer, Destabilizer, MixedDestabilizer, CliffordOperator
-
-#==============================================================================#
-#                           EXPORTS - Phase 1                                  #
-#==============================================================================#
 
 export DisentanglingStrategy
 export OFDStrategy, OBDStrategy, HybridStrategy, NoDisentangling
@@ -234,17 +213,9 @@ export validate_qubit_index, validate_circuit
 
 export isapprox_zero, isapprox_one, safe_log
 
-#==============================================================================#
-#                    EXPORTS - Phase 2: State Initialization                   #
-#==============================================================================#
-
 export initialize!, is_initialized, ensure_initialized!
 export get_bond_dimension, get_predicted_bond_dimension
 export add_twisted_pauli!, compute_twisted_pauli
-
-#==============================================================================#
-#                    EXPORTS - Phase 2: Clifford Interface                     #
-#==============================================================================#
 
 export initialize_clifford
 export commute_pauli_through_clifford
@@ -257,10 +228,6 @@ export pauli_weight, pauli_support
 export has_x_or_y, get_xbit_vector, get_zbit_vector
 export clifford_nqubits
 export create_pauli_string, create_pauli_string_with_phase, pauli_to_string
-
-#==============================================================================#
-#                       EXPORTS - Phase 2: MPS Interface                       #
-#==============================================================================#
 
 export initialize_mps
 export get_mps_bond_dimension, get_mps_norm, normalize_mps!
@@ -275,20 +242,13 @@ export sample_mps, sample_mps_multiple
 export mps_overlap, mps_probability, mps_amplitude
 export apply_two_qubit_gate!, matrix_to_two_qubit_itensor
 
-#==============================================================================#
-#                          EXPORTS - Phase 2: GF(2)                            #
-#==============================================================================#
-
 export build_gf2_matrix, build_gf2_matrix_from_xbits
 export gf2_rank, gf2_rank!
 export predict_bond_dimension
 export count_disentanglable, can_disentangle, find_disentangling_qubit
 export analyze_gf2_structure, find_independent_rows, find_independent_rows_with_basis
 export gf2_null_space, incremental_rank_update
-
-#==============================================================================#
-#                    EXPORTS - Phase 3: Two-Qubit Cliffords                    #
-#==============================================================================#
+export compute_gf2_for_mixed_circuit
 
 export generate_single_qubit_clifford, resolve_single_qubit_clifford
 export get_all_two_qubit_cliffords, sample_two_qubit_cliffords
@@ -301,10 +261,6 @@ export get_cnot_class_representatives, get_expanded_representatives
 export compute_renyi2_entropy, compute_von_neumann_entropy
 export extract_two_site_rdm, transform_rdm, partial_trace_4x4
 
-#==============================================================================#
-#                           EXPORTS - Phase 3: OFD                             #
-#==============================================================================#
-
 export build_disentangler_gates, build_controlled_pauli_gate, flatten_gate_sequence
 export apply_ofd!, try_apply_ofd!
 export apply_t_gate_ofd!, apply_tdag_gate_ofd!
@@ -313,10 +269,6 @@ export update_twisted_pauli_after_ofd
 export analyze_ofd_applicability, count_ofd_applicable
 export generate_ofd_circuit
 export t_gate_magic_state, magic_state_vector
-
-#==============================================================================#
-#                           EXPORTS - Phase 3: OBD                             #
-#==============================================================================#
 
 export find_optimal_clifford_for_bond
 export apply_clifford_to_mps!, apply_clifford_index_to_mps!
@@ -336,10 +288,6 @@ export PauliExpectations, CliffordPauliMap
 export precompute_pauli_expectations, build_clifford_pauli_map
 export get_or_build_clifford_pauli_cache
 export evaluate_renyi2_from_pauli, find_optimal_clifford_fast
-
-#==============================================================================#
-#                        EXPORTS - Phase 4: Simulation                         #
-#==============================================================================#
 
 export apply_gate!, rotation_to_clifford
 
@@ -362,10 +310,6 @@ export random_t_depth_circuit, hardware_efficient_ansatz
 
 export analyze_circuit, predict_bond_dimension_for_circuit
 export apply_clifford_left_multiply!
-
-#==============================================================================#
-#                              VERSION INFO                                    #
-#==============================================================================#
 
 """
     CAMPS.version() -> VersionNumber
@@ -395,7 +339,7 @@ function info()
     println("  • Full Clifford+T circuit simulation")
     println("  • State vector extraction and fidelity computation")
     println("  • Standard circuit generators (QFT, GHZ, W-state)")
-    println("  • Comprehensive benchmarking suite")
+    println("  • Benchmarking suite")
 end
 
-end 
+end

@@ -298,4 +298,66 @@ using QuantumClifford
         end
     end
 
+    @testset "OFD amplitude correctness — state preserved" begin
+        @testset "OFD produces same amplitudes as NoDisentangling" begin
+            circuit = Gate[
+                HGate(1), HGate(2), HGate(3),
+                CNOTGate(1, 2),
+                TGate(1), TGate(2)
+            ]
+            n = 3
+            result_ofd = simulate_circuit(circuit, n; strategy=OFDStrategy())
+            result_none = simulate_circuit(circuit, n; strategy=NoDisentangling())
+
+            ψ_ofd = state_vector(result_ofd.state)
+            ψ_none = state_vector(result_none.state)
+
+            idx = findfirst(i -> abs(ψ_ofd[i]) > 1e-10, eachindex(ψ_ofd))
+            if idx !== nothing
+                phase = ψ_none[idx] / ψ_ofd[idx]
+                @test norm(ψ_ofd * phase - ψ_none) < 1e-8
+            end
+        end
+
+        @testset "OFD with Y-type twisted Pauli" begin
+            state = CAMPSState(3)
+            initialize!(state)
+            apply_clifford_gate!(state.clifford, sHadamard(1))
+            apply_clifford_gate!(state.clifford, sPhase(1))
+            P = compute_twisted_pauli(state, :Z, 1)
+            @test has_x_or_y(P, 1) == true
+
+            success, _ = apply_t_gate_ofd!(state, 1)
+            @test success == true
+            @test is_magic(state, 1)
+            @test get_bond_dimension(state) == 1
+        end
+    end
+
+    @testset "OFD with non-T rotation angles" begin
+        @testset "Rz(π/3) via OFD" begin
+            state = CAMPSState(3)
+            initialize!(state)
+            apply_clifford_gate!(state.clifford, sHadamard(1))
+
+            P_twisted = compute_twisted_pauli(state, :Z, 1)
+            control = find_disentangling_qubit(P_twisted, state.free_qubits)
+            @test control !== nothing
+
+            apply_ofd!(state, P_twisted, π/3, control)
+            @test is_magic(state, 1)
+            @test get_bond_dimension(state) == 1
+        end
+    end
+
+    @testset "Sequential OFD — partial success" begin
+        state = CAMPSState(3)
+        initialize!(state)
+        apply_clifford_gate!(state.clifford, sHadamard(1))
+
+        result = apply_ofds!(state, [1, 2])
+        @test result.num_applied == 1
+        @test result.num_failed == 1
+    end
+
 end

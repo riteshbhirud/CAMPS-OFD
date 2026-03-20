@@ -88,9 +88,8 @@ end
 println("✓ Dependencies loaded on all workers")
 println()
 
-#=
-Execute single circuit with comprehensive error handling and debugging.
-=#
+Execute single circuit with error handling and debugging.
+=
 @everywhere function run_single_circuit_parallel(
     family_name::String,
     params::Dict
@@ -307,7 +306,7 @@ function generate_ultrafast_phase2()
     seed_base = 2000
 
     phase2_configs = [
-        (get_name(QAOAMaxCutCircuit()), Dict(:n_qubits => 8, :n_t_gates => 4, :seed => seed_base)),
+        (get_name(QAOAMaxCutCircuit()), Dict(:n_qubits => 8, :n_t_gates => 8, :seed => seed_base, :gamma => π/4, :beta => π/8)),
         (get_name(SurfaceCodeFamily()), Dict(:n_qubits => 8, :n_t_gates => 4, :seed => seed_base+1)),
         (get_name(QFTFamily()), Dict(:n_qubits => 4, :density => :low, :seed => seed_base+2)),
         (get_name(GroverFamily()), Dict(:n_qubits => 4, :density => :quarter, :seed => seed_base+3)),
@@ -379,7 +378,7 @@ end
 """
 Generate experiment specifications for Phase 2 families (5 families).
 
-QAOA MaxCut: 72 circuits (3 sizes × 3 t_fractions × 8 realizations)
+QAOA MaxCut: 72 circuits (3 sizes × 24 realizations, fixed angles γ=π/4, β=π/8)
 Surface Code: 72 circuits (3 sizes × 3 t_levels × 8 realizations)
 QFT: 72 circuits (3 sizes × 3 densities × 8 realizations)
 Grover: 72 circuits (3 sizes × 3 densities × 8 realizations)
@@ -392,17 +391,16 @@ function generate_phase2_experiments(n_realizations=8)
 
     qaoa_name = get_name(QAOAMaxCutCircuit())
     for n in [8, 12, 16]
-        for t_frac in [0.5, 1.0, 1.5]
-            n_t = Int(round(n * t_frac))
-            for real in 1:n_realizations
-                seed = Int(hash(("QAOA", n, n_t, real)) % UInt32)
-                params = Dict{Symbol, Any}(
-                    :n_qubits => n,
-                    :n_t_gates => n_t,
-                    :seed => seed
-                )
-                push!(experiments, (family_name=qaoa_name, params=params))
-            end
+        for real in 1:(3 * n_realizations)
+            seed = Int(hash(("QAOA_fixed", n, real)) % UInt32)
+            params = Dict{Symbol, Any}(
+                :n_qubits => n,
+                :n_t_gates => n,
+                :seed => seed,
+                :gamma => π/4,
+                :beta => π/8
+            )
+            push!(experiments, (family_name=qaoa_name, params=params))
         end
     end
 
@@ -578,7 +576,8 @@ function run_parallel_benchmark_complete(;
                           params=Dict(:n_qubits => 8, :n_t_gates => 4, :clifford_depth => 2, :seed => 1000))]
         elseif subset == "qaoa"
             experiments = [(family_name="QAOA MaxCut (p=1, 3-regular)",
-                          params=Dict(:n_qubits => 8, :n_t_gates => 4, :seed => 2000))]
+                          params=Dict(:n_qubits => 8, :n_t_gates => 8, :seed => 2000,
+                                      :gamma => π/4, :beta => π/8))]
         elseif subset == "surface"
             experiments = [(family_name="Surface Code",
                           params=Dict(:n_qubits => 8, :n_t_gates => 4, :seed => 2001))]

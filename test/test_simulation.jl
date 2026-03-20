@@ -1,6 +1,7 @@
 using Test
 using CAMPS
 using QuantumClifford
+using Random
 
 @testset "Simulation Tests" begin
 
@@ -115,6 +116,24 @@ using QuantumClifford
             @test all(s -> all(b -> b in [0, 1], s), samples)
 
             @test all(s -> s == [0, 0, 0], samples)
+        end
+
+        @testset "sample_state applies Clifford transformation" begin
+            state = CAMPSState(3)
+            initialize!(state)
+            apply_gate!(state, XGate(1))
+
+            samples = sample_state(state; num_samples=20)
+            @test all(s -> s == [1, 0, 0], samples)
+
+            state2 = CAMPSState(3)
+            initialize!(state2)
+            apply_gate!(state2, HGate(1))
+
+            samples2 = sample_state(state2; num_samples=100)
+            @test all(s -> s == [0, 0, 0] || s == [1, 0, 0], samples2)
+            @test any(s -> s == [0, 0, 0], samples2)
+            @test any(s -> s == [1, 0, 0], samples2)
         end
 
         @testset "amplitude" begin
@@ -305,18 +324,51 @@ using QuantumClifford
             @test result.final_bond_dim == 1
         end
 
-        @testset "Many T gates" begin
+        @testset "Many T gates (deterministic)" begin
+            rng = Random.MersenneTwister(42)
             circuit = Gate[]
             for q in 1:4
                 push!(circuit, HGate(q))
             end
             for _ in 1:10
-                push!(circuit, TGate(rand(1:4)))
+                push!(circuit, TGate(rand(rng, 1:4)))
             end
 
             result = simulate_circuit(circuit, 4; strategy=HybridStrategy())
             @test result.n_non_clifford == 10
             @test is_initialized(result.state)
+        end
+    end
+
+    @testset "OBDStrategy in simulate_circuit" begin
+        circuit = Gate[HGate(1), HGate(2), CNOTGate(1, 2), TGate(1)]
+        n = 2
+        result = simulate_circuit(circuit, n; strategy=OBDStrategy(max_sweeps=1))
+        @test result.n_non_clifford == 1
+        @test is_initialized(result.state)
+        @test result.final_bond_dim >= 1
+    end
+
+    @testset "expectation_value_y" begin
+        @testset "⟨Y⟩ for |0⟩ = 0" begin
+            state = CAMPSState(2); initialize!(state)
+            @test abs(expectation_value_y(state, 1)) < 1e-10
+        end
+
+        @testset "⟨Y⟩ for S|+⟩ = +1" begin
+            state = CAMPSState(2); initialize!(state)
+            apply_gate!(state, HGate(1))
+            apply_gate!(state, SGate(1))
+            @test real(expectation_value_y(state, 1)) ≈ 1.0 atol=1e-10
+        end
+    end
+
+    @testset "Expectation values — multi-qubit Pauli strings" begin
+        @testset "⟨XZ⟩ for |+0⟩" begin
+            state = CAMPSState(2); initialize!(state)
+            apply_gate!(state, HGate(1))
+            P = P"XZ"
+            @test real(expectation_value(state, P)) ≈ 1.0 atol=1e-10
         end
     end
 

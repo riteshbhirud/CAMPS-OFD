@@ -229,7 +229,7 @@ end
 end
 
 @testset "Incremental Rank Update" begin
-    @testset "incremental_rank_update new independent row" begin
+    @testset "incremental_rank_update: dependent row [1,1] = row1 ⊕ row2" begin
         M = Bool[true false; false true]
         new_row = BitVector([true, true])
 
@@ -242,7 +242,7 @@ end
         @test is_indep == false
     end
 
-    @testset "incremental_rank_update new dependent row" begin
+    @testset "incremental_rank_update: dependent row [1,0] = existing row" begin
         M = Bool[true false; false true]
         new_row = BitVector([true, false])
 
@@ -350,5 +350,56 @@ end
         paulis = [P"XY_", P"YX_", P"XX_"]
 
         @test predict_bond_dimension(paulis) == 4
+    end
+end
+
+@testset "Null space vectors: row combinations sum to zero (left null space)" begin
+    @testset "3x3 rank-2 matrix" begin
+        M = Bool[1 1 0; 0 1 1; 1 0 1]
+        null_vecs = gf2_null_space(M)
+        @test length(null_vecs) == 1
+        for v in null_vecs
+            for j in axes(M, 2)
+                col_sum = reduce(⊻, M[i, j] & v[i] for i in axes(M, 1))
+                @test col_sum == false
+            end
+        end
+    end
+
+    @testset "4x4 rank-2 matrix" begin
+        M = Bool[1 0 1 0; 0 1 0 1; 1 1 1 1; 0 0 0 0]
+        null_vecs = gf2_null_space(M)
+        @test length(null_vecs) >= 2
+        for v in null_vecs
+            for j in axes(M, 2)
+                col_sum = reduce(⊻, M[i, j] & v[i] for i in axes(M, 1))
+                @test col_sum == false
+            end
+        end
+    end
+end
+
+@testset "Large GF(2) matrix correctness" begin
+    @testset "50x30 random matrix: rank ≤ min(m, n)" begin
+        M = rand(Bool, 50, 30)
+        r = gf2_rank(M)
+        @test 0 <= r <= 30
+    end
+
+    @testset "Identity block: rank = k" begin
+        k = 20
+        M = zeros(Bool, 30, 25)
+        for i in 1:k
+            M[i, i] = true
+        end
+        @test gf2_rank(M) == k
+    end
+
+    @testset "rank + nullity = number of rows (square)" begin
+        n = 15
+        M = rand(Bool, n, n)
+        r = gf2_rank(M)
+        null_vecs = gf2_null_space(M)
+        @test r + length(null_vecs) == n
     end
 end

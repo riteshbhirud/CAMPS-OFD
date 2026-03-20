@@ -303,4 +303,96 @@ using LinearAlgebra
         end
     end
 
+    @testset "OBD state preservation — does not change |ψ⟩" begin
+        @testset "OBD produces same amplitudes as NoDisentangling" begin
+            circuit = Gate[
+                HGate(1), HGate(2),
+                CNOTGate(1, 2),
+                TGate(1), TGate(2)
+            ]
+            n = 2
+            result_obd = simulate_circuit(circuit, n; strategy=OBDStrategy(max_sweeps=2))
+            result_none = simulate_circuit(circuit, n; strategy=NoDisentangling())
+
+            ψ_obd = state_vector(result_obd.state)
+            ψ_none = state_vector(result_none.state)
+
+            idx = findfirst(i -> abs(ψ_obd[i]) > 1e-10, eachindex(ψ_obd))
+            if idx !== nothing
+                phase = ψ_none[idx] / ψ_obd[idx]
+                @test norm(ψ_obd * phase - ψ_none) < 1e-8
+            end
+        end
+    end
+
+    @testset "OBD entropy reduction on entangled state" begin
+        @testset "OBD reduces or maintains entropy" begin
+            state = CAMPSState(4)
+            initialize!(state)
+
+            for q in 1:4
+                apply_clifford_gate!(state.clifford, sHadamard(q))
+            end
+            apply_clifford_gate!(state.clifford, sCNOT(1, 2))
+            apply_clifford_gate!(state.clifford, sCNOT(2, 3))
+            apply_clifford_gate!(state.clifford, sCNOT(3, 4))
+
+            for q in 1:3
+                P = compute_twisted_pauli(state, :Z, q)
+                apply_twisted_rotation!(state.mps, state.sites, P, π/4;
+                                        max_bond=64, cutoff=1e-12)
+                push!(state.twisted_paulis, P)
+                mark_as_magic!(state, q)
+            end
+
+            entropy_before = CAMPS.max_entanglement_entropy(state.mps)
+
+            result, _ = obd_sweep!(state.mps, state.sites, state.clifford;
+                                    use_full_search=false,
+                                    direction=:left_to_right)
+
+            @test result.final_max_entropy <= result.initial_max_entropy + 1e-10
+        end
+    end
+
+    @testset "CNOT decomposition produces correct unitary" begin
+        @testset "Decomposed CNOT reconstructs original" begin
+            D = one(Destabilizer, 2)
+            apply!(D, sCNOT(1, 2))
+            C = CliffordOperator(D)
+            U_original = clifford_to_matrix(C)
+
+            gates = decompose_two_qubit_clifford(C, 1, 2)
+            D2 = one(Destabilizer, 2)
+            for g in gates
+                apply!(D2, g)
+            end
+            C2 = CliffordOperator(D2)
+            U_decomposed = clifford_to_matrix(C2)
+
+            if !isempty(gates)
+                phase = U_decomposed[1, 1] / U_original[1, 1]
+                @test norm(U_original * phase - U_decomposed) < 1e-8
+            end
+        end
+    end
+
+    @testset "obd_sweep! right_to_left direction" begin
+        state = CAMPSState(3)
+        initialize!(state)
+        apply_clifford_gate!(state.clifford, sHadamard(1))
+        apply_clifford_gate!(state.clifford, sCNOT(1, 2))
+
+        P = compute_twisted_pauli(state, :Z, 1)
+        apply_twisted_rotation!(state.mps, state.sites, P, π/4;
+                                max_bond=64, cutoff=1e-12)
+
+        result, _ = obd_sweep!(state.mps, state.sites, state.clifford;
+                                use_full_search=false,
+                                direction=:right_to_left)
+
+        @test result.initial_max_entropy >= 0
+        @test result.final_max_entropy >= 0
+    end
+
 end

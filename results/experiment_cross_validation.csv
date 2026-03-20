@@ -1,0 +1,937 @@
+success,family,n_qubits,seed,n_t_gates,actual_ofd_success,actual_ofd_fail,gf2_ofd_success,gf2_ofd_fail,gf2_rank,gf2_nullity,exact_match,abs_error
+true,"Random Clifford+T (Brick-wall)",8,4197263572,4,3,1,3,1,3,1,true,0
+true,"Random Clifford+T (Brick-wall)",8,1773945313,4,3,1,3,1,3,1,true,0
+true,"Random Clifford+T (Brick-wall)",8,520249834,4,4,0,4,0,4,0,true,0
+true,"Random Clifford+T (Brick-wall)",8,4150861993,4,3,1,3,1,3,1,true,0
+true,"Random Clifford+T (Brick-wall)",8,1856082198,4,4,0,3,1,4,0,false,1
+true,"Random Clifford+T (Brick-wall)",8,2906518588,4,4,0,3,1,4,0,false,1
+true,"Random Clifford+T (Brick-wall)",8,1484447332,4,3,1,4,0,4,0,false,1
+true,"Random Clifford+T (Brick-wall)",8,3256845919,4,4,0,4,0,4,0,true,0
+true,"Random Clifford+T (Brick-wall)",8,2535660119,8,6,2,7,1,7,1,false,1
+true,"Random Clifford+T (Brick-wall)",8,1797002151,8,7,1,5,3,6,2,false,2
+true,"Random Clifford+T (Brick-wall)",8,3198958006,8,5,3,7,1,7,1,false,2
+true,"Random Clifford+T (Brick-wall)",8,3908913254,8,7,1,6,2,7,1,false,1
+true,"Random Clifford+T (Brick-wall)",8,1849595095,8,6,2,6,2,6,2,true,0
+true,"Random Clifford+T (Brick-wall)",8,691719628,8,7,1,6,2,7,1,false,1
+true,"Random Clifford+T (Brick-wall)",8,724660302,8,7,1,7,1,7,1,true,0
+true,"Random Clifford+T (Brick-wall)",8,2816091616,8,7,1,6,2,6,2,false,1
+true,"Random Clifford+T (Brick-wall)",8,2095671321,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (Brick-wall)",8,986109329,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (Brick-wall)",8,1264262913,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (Brick-wall)",8,3716103804,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (Brick-wall)",8,3873279600,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (Brick-wall)",8,2868673212,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (Brick-wall)",8,686953368,12,8,4,7,5,8,4,false,1
+true,"Random Clifford+T (Brick-wall)",8,3552130534,12,8,4,7,5,8,4,false,1
+true,"Random Clifford+T (Brick-wall)",12,492776547,6,6,0,5,1,6,0,false,1
+true,"Random Clifford+T (Brick-wall)",12,1686907451,6,5,1,5,1,5,1,true,0
+true,"Random Clifford+T (Brick-wall)",12,132058774,6,4,2,5,1,6,0,false,1
+true,"Random Clifford+T (Brick-wall)",12,2470394327,6,6,0,5,1,5,1,false,1
+true,"Random Clifford+T (Brick-wall)",12,4105688579,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (Brick-wall)",12,842803367,6,5,1,6,0,6,0,false,1
+true,"Random Clifford+T (Brick-wall)",12,3115373640,6,5,1,6,0,6,0,false,1
+true,"Random Clifford+T (Brick-wall)",12,2193288599,6,6,0,5,1,5,1,false,1
+true,"Random Clifford+T (Brick-wall)",12,3510286990,12,10,2,10,2,10,2,true,0
+true,"Random Clifford+T (Brick-wall)",12,275864898,12,12,0,12,0,10,2,true,0
+true,"Random Clifford+T (Brick-wall)",12,4103902200,12,10,2,10,2,11,1,true,0
+true,"Random Clifford+T (Brick-wall)",12,3301926791,12,10,2,10,2,11,1,true,0
+true,"Random Clifford+T (Brick-wall)",12,381871817,12,11,1,12,0,12,0,false,1
+true,"Random Clifford+T (Brick-wall)",12,3246113737,12,9,3,11,1,10,2,false,2
+true,"Random Clifford+T (Brick-wall)",12,2906297229,12,10,2,11,1,10,2,false,1
+true,"Random Clifford+T (Brick-wall)",12,1627118327,12,12,0,11,1,11,1,false,1
+true,"Random Clifford+T (Brick-wall)",12,3175219307,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",12,4087240765,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",12,606938585,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",12,370362248,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",12,1867197939,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",12,3663637401,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",12,1021619674,18,11,7,12,6,12,6,false,1
+true,"Random Clifford+T (Brick-wall)",12,459765789,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (Brick-wall)",16,2413184321,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (Brick-wall)",16,2204529707,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (Brick-wall)",16,3578480629,8,7,1,8,0,8,0,false,1
+true,"Random Clifford+T (Brick-wall)",16,2654301812,8,8,0,7,1,8,0,false,1
+true,"Random Clifford+T (Brick-wall)",16,3782116800,8,8,0,7,1,7,1,false,1
+true,"Random Clifford+T (Brick-wall)",16,2552548287,8,7,1,8,0,8,0,false,1
+true,"Random Clifford+T (Brick-wall)",16,2075686609,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (Brick-wall)",16,2065508437,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (Brick-wall)",16,4018087663,16,14,2,15,1,15,1,false,1
+true,"Random Clifford+T (Brick-wall)",16,3107735564,16,15,1,14,2,14,2,false,1
+true,"Random Clifford+T (Brick-wall)",16,392944935,16,15,1,15,1,14,2,true,0
+true,"Random Clifford+T (Brick-wall)",16,1444075235,16,15,1,15,1,14,2,true,0
+true,"Random Clifford+T (Brick-wall)",16,152833009,16,15,1,14,2,15,1,false,1
+true,"Random Clifford+T (Brick-wall)",16,1601614789,16,15,1,14,2,15,1,false,1
+true,"Random Clifford+T (Brick-wall)",16,2769682813,16,16,0,14,2,15,1,false,2
+true,"Random Clifford+T (Brick-wall)",16,758637133,16,16,0,14,2,15,1,false,2
+true,"Random Clifford+T (Brick-wall)",16,2809262760,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,2922442592,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,1092841608,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,2421594872,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,71973671,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,223636244,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,3004551744,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (Brick-wall)",16,3059282329,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",8,36831665,4,3,1,4,0,4,0,false,1
+true,"Random Clifford+T (All-to-all)",8,4215665072,4,4,0,4,0,4,0,true,0
+true,"Random Clifford+T (All-to-all)",8,2652099811,4,3,1,3,1,4,0,true,0
+true,"Random Clifford+T (All-to-all)",8,3845998793,4,4,0,4,0,4,0,true,0
+true,"Random Clifford+T (All-to-all)",8,329754375,4,4,0,4,0,4,0,true,0
+true,"Random Clifford+T (All-to-all)",8,1757246228,4,4,0,4,0,4,0,true,0
+true,"Random Clifford+T (All-to-all)",8,1545194432,4,4,0,3,1,3,1,false,1
+true,"Random Clifford+T (All-to-all)",8,3991997005,4,4,0,3,1,4,0,false,1
+true,"Random Clifford+T (All-to-all)",8,348311753,8,7,1,7,1,6,2,true,0
+true,"Random Clifford+T (All-to-all)",8,779766040,8,7,1,7,1,7,1,true,0
+true,"Random Clifford+T (All-to-all)",8,2265497336,8,8,0,7,1,6,2,false,1
+true,"Random Clifford+T (All-to-all)",8,554126911,8,7,1,8,0,7,1,false,1
+true,"Random Clifford+T (All-to-all)",8,4167425494,8,7,1,8,0,8,0,false,1
+true,"Random Clifford+T (All-to-all)",8,1500617368,8,7,1,8,0,6,2,false,1
+true,"Random Clifford+T (All-to-all)",8,2978516673,8,7,1,7,1,7,1,true,0
+true,"Random Clifford+T (All-to-all)",8,1616520890,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",8,1458733531,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",8,2094937185,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",8,1524444680,12,7,5,8,4,8,4,false,1
+true,"Random Clifford+T (All-to-all)",8,4029507245,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",8,37797104,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",8,1075135198,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",8,2308054032,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",8,1559066940,12,8,4,8,4,8,4,true,0
+true,"Random Clifford+T (All-to-all)",12,2727039552,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (All-to-all)",12,2776034057,6,5,1,6,0,6,0,false,1
+true,"Random Clifford+T (All-to-all)",12,3913897307,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (All-to-all)",12,1817872118,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (All-to-all)",12,959618442,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (All-to-all)",12,1717407336,6,6,0,5,1,6,0,false,1
+true,"Random Clifford+T (All-to-all)",12,2939401568,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (All-to-all)",12,2914194091,6,6,0,6,0,6,0,true,0
+true,"Random Clifford+T (All-to-all)",12,2745390872,12,12,0,12,0,10,2,true,0
+true,"Random Clifford+T (All-to-all)",12,800208585,12,11,1,11,1,11,1,true,0
+true,"Random Clifford+T (All-to-all)",12,1286627058,12,12,0,11,1,11,1,false,1
+true,"Random Clifford+T (All-to-all)",12,3727767223,12,11,1,11,1,11,1,true,0
+true,"Random Clifford+T (All-to-all)",12,2310669199,12,11,1,12,0,11,1,false,1
+true,"Random Clifford+T (All-to-all)",12,2502799423,12,12,0,10,2,11,1,false,2
+true,"Random Clifford+T (All-to-all)",12,955137978,12,12,0,11,1,10,2,false,1
+true,"Random Clifford+T (All-to-all)",12,542893593,12,11,1,12,0,11,1,false,1
+true,"Random Clifford+T (All-to-all)",12,3308248183,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,3255844329,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,3547537020,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,1663569200,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,2481972429,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,1029834987,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,236299732,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",12,3932241929,18,12,6,12,6,12,6,true,0
+true,"Random Clifford+T (All-to-all)",16,329442904,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,2540007905,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,620336553,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,67013680,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,1844551128,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,1676848195,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,974489995,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,3388956768,8,8,0,8,0,8,0,true,0
+true,"Random Clifford+T (All-to-all)",16,1473639190,16,15,1,15,1,15,1,true,0
+true,"Random Clifford+T (All-to-all)",16,3556860044,16,14,2,15,1,16,0,false,1
+true,"Random Clifford+T (All-to-all)",16,3037595058,16,16,0,16,0,15,1,true,0
+true,"Random Clifford+T (All-to-all)",16,1221962088,16,15,1,15,1,14,2,true,0
+true,"Random Clifford+T (All-to-all)",16,4189915855,16,15,1,16,0,16,0,false,1
+true,"Random Clifford+T (All-to-all)",16,3791277964,16,16,0,15,1,15,1,false,1
+true,"Random Clifford+T (All-to-all)",16,287018004,16,15,1,15,1,15,1,true,0
+true,"Random Clifford+T (All-to-all)",16,1735010209,16,15,1,16,0,15,1,false,1
+true,"Random Clifford+T (All-to-all)",16,782757404,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,2409553119,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,3838798960,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,3571354608,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,729078067,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,1095383721,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,3460973355,24,16,8,16,8,16,8,true,0
+true,"Random Clifford+T (All-to-all)",16,3091601037,24,16,8,16,8,16,8,true,0
+true,"Bernstein-Vazirani",8,2609012160,4,4,0,4,0,4,0,true,0
+true,"Bernstein-Vazirani",8,3787343822,4,2,2,2,2,2,2,true,0
+true,"Bernstein-Vazirani",8,3168977933,4,4,0,4,0,3,1,true,0
+true,"Bernstein-Vazirani",8,1875213814,4,4,0,4,0,4,0,true,0
+true,"Bernstein-Vazirani",8,993524805,4,2,2,2,2,2,2,true,0
+true,"Bernstein-Vazirani",8,2115287708,4,3,1,3,1,4,0,true,0
+true,"Bernstein-Vazirani",8,3227094606,4,3,1,3,1,3,1,true,0
+true,"Bernstein-Vazirani",8,3644623962,4,3,1,3,1,2,2,true,0
+true,"Bernstein-Vazirani",8,2308396932,8,6,2,6,2,6,2,true,0
+true,"Bernstein-Vazirani",8,2564855118,8,6,2,6,2,6,2,true,0
+true,"Bernstein-Vazirani",8,3396965080,8,4,4,4,4,5,3,true,0
+true,"Bernstein-Vazirani",8,4286626769,8,5,3,5,3,4,4,true,0
+true,"Bernstein-Vazirani",8,3369837106,8,5,3,5,3,5,3,true,0
+true,"Bernstein-Vazirani",8,2625020761,8,5,3,5,3,6,2,true,0
+true,"Bernstein-Vazirani",8,659758657,8,5,3,4,4,4,4,false,1
+true,"Bernstein-Vazirani",8,3728832396,8,5,3,5,3,5,3,true,0
+true,"Bernstein-Vazirani",8,2938638441,12,8,4,6,6,6,6,false,2
+true,"Bernstein-Vazirani",8,1200690128,12,6,6,5,7,5,7,false,1
+true,"Bernstein-Vazirani",8,769328794,12,7,5,7,5,6,6,true,0
+true,"Bernstein-Vazirani",8,1259705725,12,7,5,6,6,7,5,false,1
+true,"Bernstein-Vazirani",8,639835621,12,7,5,6,6,6,6,false,1
+true,"Bernstein-Vazirani",8,2452266427,12,6,6,7,5,7,5,false,1
+true,"Bernstein-Vazirani",8,1418212702,12,6,6,5,7,6,6,false,1
+true,"Bernstein-Vazirani",8,1194303723,12,7,5,5,7,6,6,false,2
+true,"Bernstein-Vazirani",12,1519925861,6,5,1,5,1,5,1,true,0
+true,"Bernstein-Vazirani",12,1549629446,6,6,0,6,0,6,0,true,0
+true,"Bernstein-Vazirani",12,1287112609,6,6,0,6,0,4,2,true,0
+true,"Bernstein-Vazirani",12,690529118,6,5,1,5,1,5,1,true,0
+true,"Bernstein-Vazirani",12,221055649,6,5,1,5,1,5,1,true,0
+true,"Bernstein-Vazirani",12,1662428744,6,5,1,5,1,5,1,true,0
+true,"Bernstein-Vazirani",12,4209677256,6,4,2,4,2,4,2,true,0
+true,"Bernstein-Vazirani",12,2317359967,6,6,0,6,0,6,0,true,0
+true,"Bernstein-Vazirani",12,2390781718,12,9,3,7,5,8,4,false,2
+true,"Bernstein-Vazirani",12,3026842909,12,10,2,10,2,8,4,true,0
+true,"Bernstein-Vazirani",12,375647983,12,8,4,7,5,7,5,false,1
+true,"Bernstein-Vazirani",12,2843436847,12,8,4,8,4,8,4,true,0
+true,"Bernstein-Vazirani",12,1477067363,12,8,4,8,4,8,4,true,0
+true,"Bernstein-Vazirani",12,3764377518,12,7,5,7,5,7,5,true,0
+true,"Bernstein-Vazirani",12,2560835632,12,8,4,8,4,8,4,true,0
+true,"Bernstein-Vazirani",12,85442650,12,8,4,9,3,9,3,false,1
+true,"Bernstein-Vazirani",12,2793333191,18,10,8,9,9,9,9,false,1
+true,"Bernstein-Vazirani",12,1910520332,18,9,9,8,10,8,10,false,1
+true,"Bernstein-Vazirani",12,1450992792,18,9,9,10,8,10,8,false,1
+true,"Bernstein-Vazirani",12,3019443256,18,9,9,9,9,9,9,true,0
+true,"Bernstein-Vazirani",12,952918585,18,10,8,9,9,10,8,false,1
+true,"Bernstein-Vazirani",12,675584410,18,7,11,8,10,8,10,false,1
+true,"Bernstein-Vazirani",12,1225843260,18,9,9,9,9,10,8,true,0
+true,"Bernstein-Vazirani",12,2615802078,18,9,9,11,7,9,9,false,2
+true,"Bernstein-Vazirani",16,2019063140,8,8,0,8,0,8,0,true,0
+true,"Bernstein-Vazirani",16,3716221468,8,6,2,6,2,6,2,true,0
+true,"Bernstein-Vazirani",16,4264664224,8,6,2,6,2,6,2,true,0
+true,"Bernstein-Vazirani",16,180774440,8,8,0,8,0,8,0,true,0
+true,"Bernstein-Vazirani",16,2137538500,8,7,1,7,1,7,1,true,0
+true,"Bernstein-Vazirani",16,4112185067,8,7,1,7,1,7,1,true,0
+true,"Bernstein-Vazirani",16,49442086,8,6,2,6,2,6,2,true,0
+true,"Bernstein-Vazirani",16,1601719028,8,7,1,7,1,7,1,true,0
+true,"Bernstein-Vazirani",16,2442523746,16,10,6,9,7,10,6,false,1
+true,"Bernstein-Vazirani",16,3819768079,16,9,7,9,7,9,7,true,0
+true,"Bernstein-Vazirani",16,773183058,16,10,6,9,7,9,7,false,1
+true,"Bernstein-Vazirani",16,4064065682,16,11,5,11,5,11,5,true,0
+true,"Bernstein-Vazirani",16,135175634,16,10,6,10,6,10,6,true,0
+true,"Bernstein-Vazirani",16,256895317,16,11,5,11,5,11,5,true,0
+true,"Bernstein-Vazirani",16,3440869455,16,9,7,9,7,9,7,true,0
+true,"Bernstein-Vazirani",16,1249110134,16,12,4,9,7,9,7,false,3
+true,"Bernstein-Vazirani",16,3505166642,24,13,11,13,11,13,11,true,0
+true,"Bernstein-Vazirani",16,3566092403,24,13,11,10,14,10,14,false,3
+true,"Bernstein-Vazirani",16,3536584588,24,15,9,13,11,13,11,false,2
+true,"Bernstein-Vazirani",16,3259081590,24,13,11,13,11,12,12,true,0
+true,"Bernstein-Vazirani",16,2293957396,24,14,10,12,12,13,11,false,2
+true,"Bernstein-Vazirani",16,2099605786,24,13,11,13,11,13,11,true,0
+true,"Bernstein-Vazirani",16,825129036,24,14,10,14,10,15,9,true,0
+true,"Bernstein-Vazirani",16,863702494,24,13,11,14,10,13,11,false,1
+true,"Simon's Algorithm",8,3035568968,4,3,1,3,1,3,1,true,0
+true,"Simon's Algorithm",8,1472247751,4,3,1,3,1,3,1,true,0
+true,"Simon's Algorithm",8,2779409236,4,3,1,3,1,3,1,true,0
+true,"Simon's Algorithm",8,2801191904,4,2,2,2,2,2,2,true,0
+true,"Simon's Algorithm",8,876947257,4,3,1,3,1,3,1,true,0
+true,"Simon's Algorithm",8,674285988,4,4,0,4,0,4,0,true,0
+true,"Simon's Algorithm",8,3396606398,4,3,1,3,1,3,1,true,0
+true,"Simon's Algorithm",8,81975392,4,3,1,3,1,2,2,true,0
+true,"Simon's Algorithm",8,4156551223,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,882127733,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,2349706207,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,742295327,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,3595527384,8,3,5,4,4,4,4,false,1
+true,"Simon's Algorithm",8,2952593854,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,2716399904,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,4189755867,8,4,4,4,4,4,4,true,0
+true,"Simon's Algorithm",8,3439361149,12,4,8,4,8,4,8,true,0
+true,"Simon's Algorithm",8,948682223,12,4,8,4,8,4,8,true,0
+true,"Simon's Algorithm",8,583734314,12,5,7,4,8,4,8,false,1
+true,"Simon's Algorithm",8,3015208366,12,7,5,4,8,4,8,false,3
+true,"Simon's Algorithm",8,3590169768,12,4,8,4,8,4,8,true,0
+true,"Simon's Algorithm",8,235018155,12,5,7,4,8,4,8,false,1
+true,"Simon's Algorithm",8,2130704258,12,4,8,4,8,4,8,true,0
+true,"Simon's Algorithm",8,3518225988,12,4,8,4,8,4,8,true,0
+true,"Simon's Algorithm",12,2988558162,6,4,2,4,2,5,1,true,0
+true,"Simon's Algorithm",12,602786038,6,3,3,3,3,4,2,true,0
+true,"Simon's Algorithm",12,2259584249,6,4,2,4,2,5,1,true,0
+true,"Simon's Algorithm",12,2068086234,6,5,1,5,1,6,0,true,0
+true,"Simon's Algorithm",12,922431674,6,4,2,4,2,5,1,true,0
+true,"Simon's Algorithm",12,3012031990,6,4,2,4,2,4,2,true,0
+true,"Simon's Algorithm",12,2912395063,6,5,1,4,2,4,2,false,1
+true,"Simon's Algorithm",12,4169544742,6,3,3,3,3,4,2,true,0
+true,"Simon's Algorithm",12,901928409,12,5,7,5,7,5,7,true,0
+true,"Simon's Algorithm",12,927336637,12,4,8,5,7,6,6,false,1
+true,"Simon's Algorithm",12,1121702502,12,5,7,5,7,6,6,true,0
+true,"Simon's Algorithm",12,3630443609,12,6,6,6,6,6,6,true,0
+true,"Simon's Algorithm",12,1020256301,12,4,8,5,7,4,8,false,1
+true,"Simon's Algorithm",12,1861073812,12,5,7,5,7,5,7,true,0
+true,"Simon's Algorithm",12,2551987351,12,5,7,4,8,5,7,false,1
+true,"Simon's Algorithm",12,2915399348,12,4,8,4,8,4,8,true,0
+true,"Simon's Algorithm",12,2679365120,18,6,12,5,13,5,13,false,1
+true,"Simon's Algorithm",12,2636377272,18,7,11,6,12,6,12,false,1
+true,"Simon's Algorithm",12,971267033,18,4,14,4,14,5,13,true,0
+true,"Simon's Algorithm",12,1780929828,18,7,11,6,12,6,12,false,1
+true,"Simon's Algorithm",12,4142297504,18,6,12,6,12,6,12,true,0
+true,"Simon's Algorithm",12,1715752182,18,6,12,5,13,5,13,false,1
+true,"Simon's Algorithm",12,3650101463,18,6,12,6,12,6,12,true,0
+true,"Simon's Algorithm",12,3820242305,18,7,11,4,14,5,13,false,3
+true,"Simon's Algorithm",16,2095292416,8,5,3,5,3,5,3,true,0
+true,"Simon's Algorithm",16,2883451760,8,6,2,5,3,6,2,false,1
+true,"Simon's Algorithm",16,2894519789,8,6,2,6,2,6,2,true,0
+true,"Simon's Algorithm",16,206036152,8,4,4,4,4,5,3,true,0
+true,"Simon's Algorithm",16,2114726384,8,5,3,6,2,6,2,false,1
+true,"Simon's Algorithm",16,1982416389,8,4,4,3,5,4,4,false,1
+true,"Simon's Algorithm",16,293050794,8,3,5,3,5,4,4,true,0
+true,"Simon's Algorithm",16,1946446490,8,4,4,3,5,4,4,false,1
+true,"Simon's Algorithm",16,4228316207,16,7,9,7,9,7,9,true,0
+true,"Simon's Algorithm",16,485736141,16,7,9,7,9,7,9,true,0
+true,"Simon's Algorithm",16,3018489036,16,7,9,7,9,7,9,true,0
+true,"Simon's Algorithm",16,2215023972,16,8,8,8,8,8,8,true,0
+true,"Simon's Algorithm",16,3048191474,16,7,9,7,9,7,9,true,0
+true,"Simon's Algorithm",16,688946278,16,8,8,7,9,7,9,false,1
+true,"Simon's Algorithm",16,1074868661,16,7,9,6,10,7,9,false,1
+true,"Simon's Algorithm",16,3611074908,16,6,10,7,9,6,10,false,1
+true,"Simon's Algorithm",16,1165229821,24,7,17,8,16,8,16,false,1
+true,"Simon's Algorithm",16,2999477282,24,9,15,8,16,8,16,false,1
+true,"Simon's Algorithm",16,2498681365,24,6,18,7,17,8,16,false,1
+true,"Simon's Algorithm",16,953297119,24,9,15,8,16,8,16,false,1
+true,"Simon's Algorithm",16,1087436558,24,8,16,7,17,8,16,false,1
+true,"Simon's Algorithm",16,1049433588,24,8,16,7,17,6,18,false,1
+true,"Simon's Algorithm",16,2694047009,24,8,16,8,16,8,16,true,0
+true,"Simon's Algorithm",16,902014589,24,9,15,8,16,8,16,false,1
+true,"Deutsch-Jozsa",8,603454719,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,4029391999,4,4,0,4,0,4,0,true,0
+true,"Deutsch-Jozsa",8,3227420688,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,1296558960,4,3,1,3,1,3,1,true,0
+true,"Deutsch-Jozsa",8,1953339682,4,1,3,1,3,1,3,true,0
+true,"Deutsch-Jozsa",8,206338554,4,2,2,2,2,2,2,true,0
+true,"Deutsch-Jozsa",8,2496803905,4,3,1,3,1,3,1,true,0
+true,"Deutsch-Jozsa",8,1912221887,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,4178079065,8,6,2,5,3,5,3,false,1
+true,"Deutsch-Jozsa",8,1476234424,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,1767431962,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,2078644762,8,3,5,4,4,4,4,false,1
+true,"Deutsch-Jozsa",8,3128615293,8,4,4,4,4,4,4,true,0
+true,"Deutsch-Jozsa",8,2034338935,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,3298538286,8,5,3,4,4,4,4,false,1
+true,"Deutsch-Jozsa",8,2914460334,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,1228566086,12,5,7,5,7,5,7,true,0
+true,"Deutsch-Jozsa",8,2263664896,12,5,7,5,7,5,7,true,0
+true,"Deutsch-Jozsa",8,1089504031,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,1264157908,12,4,8,3,9,3,9,false,1
+true,"Deutsch-Jozsa",8,2315996026,12,5,7,6,6,6,6,false,1
+true,"Deutsch-Jozsa",8,939705671,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",8,3561146439,12,3,9,3,9,3,9,true,0
+true,"Deutsch-Jozsa",8,1503529524,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,1097122929,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,394866873,6,4,2,4,2,4,2,true,0
+true,"Deutsch-Jozsa",12,2187532120,6,5,1,5,1,5,1,true,0
+true,"Deutsch-Jozsa",12,4227259637,6,4,2,4,2,4,2,true,0
+true,"Deutsch-Jozsa",12,183233708,6,5,1,5,1,5,1,true,0
+true,"Deutsch-Jozsa",12,1221112109,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,2771529082,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,1029447699,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,439276180,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,2591103747,12,5,7,5,7,5,7,true,0
+true,"Deutsch-Jozsa",12,277874293,12,6,6,5,7,5,7,false,1
+true,"Deutsch-Jozsa",12,1865671339,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,3144086111,12,5,7,5,7,5,7,true,0
+true,"Deutsch-Jozsa",12,3082859384,12,6,6,7,5,7,5,false,1
+true,"Deutsch-Jozsa",12,1038868463,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,1546907977,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,3238255010,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,1038793656,18,5,13,6,12,6,12,false,1
+true,"Deutsch-Jozsa",12,1296896189,18,8,10,8,10,8,10,true,0
+true,"Deutsch-Jozsa",12,1984991799,18,9,9,9,9,9,9,true,0
+true,"Deutsch-Jozsa",12,3673370910,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",12,2244521100,18,5,13,5,13,5,13,true,0
+true,"Deutsch-Jozsa",12,770453635,18,6,12,7,11,7,11,false,1
+true,"Deutsch-Jozsa",12,3594904974,18,7,11,8,10,8,10,false,1
+true,"Deutsch-Jozsa",16,2376070748,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,979070580,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,2168436101,8,5,3,5,3,5,3,true,0
+true,"Deutsch-Jozsa",16,2132504917,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,1896405186,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,3706961836,8,4,4,4,4,4,4,true,0
+true,"Deutsch-Jozsa",16,3238846102,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,1302745013,8,5,3,5,3,5,3,true,0
+true,"Deutsch-Jozsa",16,1847386652,16,7,9,6,10,6,10,false,1
+true,"Deutsch-Jozsa",16,4242192802,16,8,8,8,8,8,8,true,0
+true,"Deutsch-Jozsa",16,3900055659,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,1418937177,16,8,8,9,7,9,7,false,1
+true,"Deutsch-Jozsa",16,4201386512,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,3710142660,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,3214932621,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,1505604057,16,8,8,9,7,9,7,false,1
+true,"Deutsch-Jozsa",16,550553618,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,3330333421,24,12,12,13,11,13,11,false,1
+true,"Deutsch-Jozsa",16,1775355514,24,11,13,11,13,11,13,true,0
+true,"Deutsch-Jozsa",16,3310144636,24,10,14,9,15,9,15,false,1
+true,"Deutsch-Jozsa",16,3335425447,0,0,0,0,0,0,0,true,0
+true,"Deutsch-Jozsa",16,1168459313,24,8,16,8,16,8,16,true,0
+true,"Deutsch-Jozsa",16,4192746675,24,10,14,8,16,8,16,false,2
+true,"Deutsch-Jozsa",16,854656390,0,0,0,0,0,0,0,true,0
+true,"GHZ State",8,1981166490,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,3062608348,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,565443327,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,385535129,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,2604495405,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,1253099428,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,2907005844,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,1515604424,4,1,3,1,3,1,3,true,0
+true,"GHZ State",8,2244647187,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,1288502233,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,3655645345,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,2697521568,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,4250173885,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,1376715830,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,2192278729,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,3645539368,8,2,6,1,7,1,7,false,1
+true,"GHZ State",8,3845040376,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,331029819,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,134579229,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,4147868655,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,3223692812,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,1837050495,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,3871621695,12,3,9,1,11,1,11,false,2
+true,"GHZ State",8,1760126472,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,4176808690,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,2990707610,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,1107859337,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,2127308835,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,251668368,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,928088175,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,3387475870,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,1600777762,6,2,4,1,5,1,5,false,1
+true,"GHZ State",12,2064815151,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,3920185711,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,1285117240,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,2739158379,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,4033506994,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,286180759,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,723061506,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,239683001,12,3,9,1,11,1,11,false,2
+true,"GHZ State",12,4168965662,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,2860789771,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,1492452289,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,3146544585,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,4146628865,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,1535686406,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,2878294796,18,3,15,1,17,1,17,false,2
+true,"GHZ State",12,370702246,18,3,15,1,17,1,17,false,2
+true,"GHZ State",16,528819682,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,2087441731,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,2973203048,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,13232344,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,2072336196,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,2042989900,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,1561458325,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,2663224399,8,2,6,1,7,1,7,false,1
+true,"GHZ State",16,2418325699,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,3265556134,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,1259254529,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,151345344,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,748434311,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,1319454428,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,2393148,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,2083393522,16,3,13,1,15,1,15,false,2
+true,"GHZ State",16,2709254012,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,1551122271,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,657125349,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,3959958570,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,304460491,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,871403548,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,1215195805,24,3,21,1,23,1,23,false,2
+true,"GHZ State",16,2883640779,24,3,21,1,23,1,23,false,2
+true,"Bell State / EPR Pairs",8,635675143,4,3,1,3,1,3,1,true,0
+true,"Bell State / EPR Pairs",8,722006067,4,3,1,3,1,3,1,true,0
+true,"Bell State / EPR Pairs",8,3487050397,4,3,1,3,1,3,1,true,0
+true,"Bell State / EPR Pairs",8,3360723727,4,2,2,2,2,2,2,true,0
+true,"Bell State / EPR Pairs",8,3715880510,4,3,1,3,1,3,1,true,0
+true,"Bell State / EPR Pairs",8,2486036346,4,3,1,3,1,3,1,true,0
+true,"Bell State / EPR Pairs",8,597081016,4,4,0,4,0,4,0,true,0
+true,"Bell State / EPR Pairs",8,1320687466,4,2,2,2,2,2,2,true,0
+true,"Bell State / EPR Pairs",8,3351799226,8,4,4,4,4,4,4,true,0
+true,"Bell State / EPR Pairs",8,2828671029,8,5,3,3,5,3,5,false,2
+true,"Bell State / EPR Pairs",8,1564496794,8,4,4,4,4,4,4,true,0
+true,"Bell State / EPR Pairs",8,923130350,8,3,5,3,5,3,5,true,0
+true,"Bell State / EPR Pairs",8,2039973343,8,3,5,3,5,3,5,true,0
+true,"Bell State / EPR Pairs",8,3573808816,8,5,3,4,4,4,4,false,1
+true,"Bell State / EPR Pairs",8,170060404,8,4,4,3,5,3,5,false,1
+true,"Bell State / EPR Pairs",8,2717006776,8,4,4,3,5,3,5,false,1
+true,"Bell State / EPR Pairs",8,132650860,12,2,10,3,9,3,9,false,1
+true,"Bell State / EPR Pairs",8,2930655127,12,6,6,4,8,4,8,false,2
+true,"Bell State / EPR Pairs",8,3370860569,12,3,9,2,10,2,10,false,1
+true,"Bell State / EPR Pairs",8,944865503,12,5,7,4,8,4,8,false,1
+true,"Bell State / EPR Pairs",8,2014919133,12,6,6,4,8,4,8,false,2
+true,"Bell State / EPR Pairs",8,2396650532,12,6,6,4,8,4,8,false,2
+true,"Bell State / EPR Pairs",8,1812353272,12,5,7,4,8,4,8,false,1
+true,"Bell State / EPR Pairs",8,3181462823,12,4,8,4,8,4,8,true,0
+true,"Bell State / EPR Pairs",12,3503912501,6,5,1,5,1,5,1,true,0
+true,"Bell State / EPR Pairs",12,1063192660,6,4,2,4,2,4,2,true,0
+true,"Bell State / EPR Pairs",12,3594005890,6,6,0,6,0,6,0,true,0
+true,"Bell State / EPR Pairs",12,4206057301,6,3,3,3,3,3,3,true,0
+true,"Bell State / EPR Pairs",12,2509860785,6,4,2,4,2,4,2,true,0
+true,"Bell State / EPR Pairs",12,894120449,6,4,2,3,3,3,3,false,1
+true,"Bell State / EPR Pairs",12,2272189937,6,4,2,4,2,4,2,true,0
+true,"Bell State / EPR Pairs",12,2906087117,6,3,3,3,3,3,3,true,0
+true,"Bell State / EPR Pairs",12,370184161,12,6,6,5,7,5,7,false,1
+true,"Bell State / EPR Pairs",12,3313940658,12,6,6,6,6,6,6,true,0
+true,"Bell State / EPR Pairs",12,1290878116,12,6,6,6,6,6,6,true,0
+true,"Bell State / EPR Pairs",12,3004996292,12,7,5,5,7,5,7,false,2
+true,"Bell State / EPR Pairs",12,4151105660,12,8,4,5,7,5,7,false,3
+true,"Bell State / EPR Pairs",12,3229896997,12,7,5,6,6,6,6,false,1
+true,"Bell State / EPR Pairs",12,3392512191,12,7,5,5,7,5,7,false,2
+true,"Bell State / EPR Pairs",12,3933845948,12,7,5,5,7,5,7,false,2
+true,"Bell State / EPR Pairs",12,468546423,18,8,10,5,13,5,13,false,3
+true,"Bell State / EPR Pairs",12,1558490825,18,7,11,5,13,5,13,false,2
+true,"Bell State / EPR Pairs",12,1551575299,18,6,12,5,13,5,13,false,1
+true,"Bell State / EPR Pairs",12,4152411816,18,11,7,6,12,6,12,false,5
+true,"Bell State / EPR Pairs",12,3097236257,18,6,12,6,12,6,12,true,0
+true,"Bell State / EPR Pairs",12,1318310780,18,9,9,6,12,6,12,false,3
+true,"Bell State / EPR Pairs",12,264344789,18,7,11,6,12,6,12,false,1
+true,"Bell State / EPR Pairs",12,2549352649,18,10,8,6,12,6,12,false,4
+true,"Bell State / EPR Pairs",16,554603972,8,7,1,7,1,7,1,true,0
+true,"Bell State / EPR Pairs",16,3590165988,8,5,3,5,3,5,3,true,0
+true,"Bell State / EPR Pairs",16,1926508334,8,6,2,6,2,6,2,true,0
+true,"Bell State / EPR Pairs",16,1981701382,8,6,2,6,2,6,2,true,0
+true,"Bell State / EPR Pairs",16,193883934,8,6,2,6,2,6,2,true,0
+true,"Bell State / EPR Pairs",16,3976995423,8,6,2,6,2,6,2,true,0
+true,"Bell State / EPR Pairs",16,3504942017,8,5,3,5,3,5,3,true,0
+true,"Bell State / EPR Pairs",16,2139152009,8,7,1,7,1,7,1,true,0
+true,"Bell State / EPR Pairs",16,953448509,16,8,8,7,9,7,9,false,1
+true,"Bell State / EPR Pairs",16,1675751126,16,9,7,7,9,7,9,false,2
+true,"Bell State / EPR Pairs",16,2611859131,16,12,4,7,9,7,9,false,5
+true,"Bell State / EPR Pairs",16,2696441287,16,8,8,7,9,7,9,false,1
+true,"Bell State / EPR Pairs",16,2012997499,16,9,7,8,8,8,8,false,1
+true,"Bell State / EPR Pairs",16,3895233407,16,9,7,7,9,7,9,false,2
+true,"Bell State / EPR Pairs",16,488244568,16,6,10,6,10,6,10,true,0
+true,"Bell State / EPR Pairs",16,1079236057,16,9,7,8,8,8,8,false,1
+true,"Bell State / EPR Pairs",16,2188837855,24,12,12,8,16,8,16,false,4
+true,"Bell State / EPR Pairs",16,415968722,24,11,13,8,16,8,16,false,3
+true,"Bell State / EPR Pairs",16,1513793977,24,11,13,8,16,8,16,false,3
+true,"Bell State / EPR Pairs",16,3999091977,24,10,14,8,16,8,16,false,2
+true,"Bell State / EPR Pairs",16,3114728616,24,11,13,8,16,8,16,false,3
+true,"Bell State / EPR Pairs",16,1752318959,24,11,13,8,16,8,16,false,3
+true,"Bell State / EPR Pairs",16,947450886,24,10,14,8,16,8,16,false,2
+true,"Bell State / EPR Pairs",16,2591860538,24,13,11,8,16,8,16,false,5
+true,"Graph State",8,2133122951,4,3,1,3,1,3,1,true,0
+true,"Graph State",8,3879269339,4,4,0,4,0,4,0,true,0
+true,"Graph State",8,581585439,4,4,0,4,0,4,0,true,0
+true,"Graph State",8,969896037,4,3,1,3,1,3,1,true,0
+true,"Graph State",8,3117046688,4,3,1,3,1,3,1,true,0
+true,"Graph State",8,831066262,4,4,0,4,0,4,0,true,0
+true,"Graph State",8,106837432,4,4,0,4,0,4,0,true,0
+true,"Graph State",8,3029846237,4,3,1,3,1,3,1,true,0
+true,"Graph State",8,2577584572,8,6,2,6,2,6,2,true,0
+true,"Graph State",8,715957593,8,4,4,4,4,4,4,true,0
+true,"Graph State",8,154728459,8,6,2,6,2,6,2,true,0
+true,"Graph State",8,1136236920,8,6,2,6,2,6,2,true,0
+true,"Graph State",8,933606352,8,5,3,5,3,5,3,true,0
+true,"Graph State",8,1467753124,8,7,1,7,1,7,1,true,0
+true,"Graph State",8,1373309363,8,6,2,5,3,5,3,false,1
+true,"Graph State",8,990987642,8,6,2,6,2,6,2,true,0
+true,"Graph State",8,982571547,12,6,6,6,6,6,6,true,0
+true,"Graph State",8,2005551859,12,6,6,6,6,6,6,true,0
+true,"Graph State",8,3760283771,12,7,5,6,6,6,6,false,1
+true,"Graph State",8,2226675602,12,6,6,5,7,5,7,false,1
+true,"Graph State",8,3902713383,12,7,5,6,6,6,6,false,1
+true,"Graph State",8,1551728785,12,8,4,8,4,8,4,true,0
+true,"Graph State",8,2421276116,12,6,6,6,6,6,6,true,0
+true,"Graph State",8,587292061,12,6,6,7,5,7,5,false,1
+true,"Graph State",12,4050933627,6,5,1,5,1,5,1,true,0
+true,"Graph State",12,794433245,6,5,1,5,1,5,1,true,0
+true,"Graph State",12,855880621,6,5,1,5,1,5,1,true,0
+true,"Graph State",12,3595299938,6,4,2,4,2,4,2,true,0
+true,"Graph State",12,1241028634,6,4,2,4,2,4,2,true,0
+true,"Graph State",12,2705234597,6,4,2,4,2,4,2,true,0
+true,"Graph State",12,2049473712,6,4,2,4,2,4,2,true,0
+true,"Graph State",12,3661975304,6,4,2,4,2,4,2,true,0
+true,"Graph State",12,3483093088,12,8,4,8,4,8,4,true,0
+true,"Graph State",12,1140937440,12,7,5,8,4,8,4,false,1
+true,"Graph State",12,2629473678,12,8,4,8,4,8,4,true,0
+true,"Graph State",12,3590408108,12,6,6,8,4,8,4,false,2
+true,"Graph State",12,1388920194,12,7,5,8,4,8,4,false,1
+true,"Graph State",12,3881026756,12,7,5,8,4,8,4,false,1
+true,"Graph State",12,1102774948,12,10,2,10,2,10,2,true,0
+true,"Graph State",12,2134291248,12,8,4,8,4,8,4,true,0
+true,"Graph State",12,1340935113,18,9,9,11,7,11,7,false,2
+true,"Graph State",12,4011406934,18,10,8,9,9,9,9,false,1
+true,"Graph State",12,1483188506,18,8,10,9,9,9,9,false,1
+true,"Graph State",12,3962177813,18,10,8,10,8,10,8,true,0
+true,"Graph State",12,1511517877,18,10,8,10,8,10,8,true,0
+true,"Graph State",12,1164874062,18,9,9,9,9,9,9,true,0
+true,"Graph State",12,3141134350,18,10,8,10,8,10,8,true,0
+true,"Graph State",12,3126299692,18,9,9,8,10,8,10,false,1
+true,"Graph State",16,1404098125,8,6,2,6,2,6,2,true,0
+true,"Graph State",16,2366622189,8,6,2,6,2,6,2,true,0
+true,"Graph State",16,727970499,8,7,1,7,1,7,1,true,0
+true,"Graph State",16,2035432274,8,5,3,5,3,5,3,true,0
+true,"Graph State",16,1431566200,8,6,2,6,2,6,2,true,0
+true,"Graph State",16,2119496336,8,7,1,7,1,7,1,true,0
+true,"Graph State",16,3238946241,8,7,1,7,1,7,1,true,0
+true,"Graph State",16,3827615674,8,6,2,6,2,6,2,true,0
+true,"Graph State",16,561595029,16,10,6,9,7,9,7,false,1
+true,"Graph State",16,3677330708,16,10,6,11,5,11,5,false,1
+true,"Graph State",16,2872484859,16,12,4,12,4,12,4,true,0
+true,"Graph State",16,3395049576,16,10,6,10,6,10,6,true,0
+true,"Graph State",16,3600796907,16,10,6,9,7,9,7,false,1
+true,"Graph State",16,4231471973,16,9,7,10,6,10,6,false,1
+true,"Graph State",16,3238739959,16,10,6,11,5,11,5,false,1
+true,"Graph State",16,2958659433,16,11,5,12,4,12,4,false,1
+true,"Graph State",16,1913772559,24,12,12,12,12,12,12,true,0
+true,"Graph State",16,1702014907,24,13,11,13,11,13,11,true,0
+true,"Graph State",16,3928856637,24,14,10,14,10,14,10,true,0
+true,"Graph State",16,2881758722,24,11,13,9,15,9,15,false,2
+true,"Graph State",16,2961902556,24,11,13,11,13,11,13,true,0
+true,"Graph State",16,1930779802,24,15,9,16,8,16,8,false,1
+true,"Graph State",16,943438738,24,14,10,14,10,14,10,true,0
+true,"Graph State",16,1684771949,24,13,11,13,11,13,11,true,0
+true,"Cluster State (1D)",8,4083326427,4,4,0,4,0,4,0,true,0
+true,"Cluster State (1D)",8,1729414436,4,3,1,3,1,3,1,true,0
+true,"Cluster State (1D)",8,456035822,4,3,1,3,1,3,1,true,0
+true,"Cluster State (1D)",8,1939862044,4,3,1,3,1,3,1,true,0
+true,"Cluster State (1D)",8,1815440029,4,3,1,3,1,3,1,true,0
+true,"Cluster State (1D)",8,3334468707,4,4,0,4,0,4,0,true,0
+true,"Cluster State (1D)",8,2898641017,4,4,0,4,0,4,0,true,0
+true,"Cluster State (1D)",8,2542332446,4,4,0,4,0,4,0,true,0
+true,"Cluster State (1D)",8,1668319058,8,5,3,5,3,5,3,true,0
+true,"Cluster State (1D)",8,1475075515,8,6,2,6,2,6,2,true,0
+true,"Cluster State (1D)",8,3988192748,8,6,2,6,2,6,2,true,0
+true,"Cluster State (1D)",8,2220829725,8,3,5,4,4,4,4,false,1
+true,"Cluster State (1D)",8,2383971949,8,5,3,5,3,5,3,true,0
+true,"Cluster State (1D)",8,447203754,8,5,3,5,3,5,3,true,0
+true,"Cluster State (1D)",8,3869993700,8,6,2,6,2,6,2,true,0
+true,"Cluster State (1D)",8,3655507784,8,5,3,5,3,5,3,true,0
+true,"Cluster State (1D)",8,1712911471,12,5,7,5,7,5,7,true,0
+true,"Cluster State (1D)",8,2291038115,12,7,5,7,5,7,5,true,0
+true,"Cluster State (1D)",8,3716319529,12,7,5,7,5,7,5,true,0
+true,"Cluster State (1D)",8,3552184785,12,7,5,7,5,7,5,true,0
+true,"Cluster State (1D)",8,4188058734,12,6,6,6,6,6,6,true,0
+true,"Cluster State (1D)",8,370311577,12,7,5,8,4,8,4,false,1
+true,"Cluster State (1D)",8,3552305609,12,7,5,7,5,7,5,true,0
+true,"Cluster State (1D)",8,2510996617,12,6,6,6,6,6,6,true,0
+true,"Cluster State (1D)",12,3250674597,6,5,1,5,1,5,1,true,0
+true,"Cluster State (1D)",12,3035878547,6,4,2,4,2,4,2,true,0
+true,"Cluster State (1D)",12,1161880301,6,5,1,5,1,5,1,true,0
+true,"Cluster State (1D)",12,2539918411,6,4,2,3,3,3,3,false,1
+true,"Cluster State (1D)",12,1607662220,6,6,0,6,0,6,0,true,0
+true,"Cluster State (1D)",12,3562003615,6,4,2,4,2,4,2,true,0
+true,"Cluster State (1D)",12,3474559207,6,5,1,5,1,5,1,true,0
+true,"Cluster State (1D)",12,4156653525,6,5,1,5,1,5,1,true,0
+true,"Cluster State (1D)",12,2643611403,12,7,5,7,5,7,5,true,0
+true,"Cluster State (1D)",12,981965885,12,8,4,8,4,8,4,true,0
+true,"Cluster State (1D)",12,1825346562,12,6,6,7,5,7,5,false,1
+true,"Cluster State (1D)",12,2299743842,12,9,3,9,3,9,3,true,0
+true,"Cluster State (1D)",12,572691252,12,7,5,6,6,6,6,false,1
+true,"Cluster State (1D)",12,3109649080,12,8,4,7,5,7,5,false,1
+true,"Cluster State (1D)",12,2082237648,12,7,5,8,4,8,4,false,1
+true,"Cluster State (1D)",12,3687072698,12,8,4,8,4,8,4,true,0
+true,"Cluster State (1D)",12,282274296,18,7,11,9,9,9,9,false,2
+true,"Cluster State (1D)",12,3679004065,18,9,9,10,8,10,8,false,1
+true,"Cluster State (1D)",12,1496319100,18,9,9,9,9,9,9,true,0
+true,"Cluster State (1D)",12,1964287464,18,11,7,11,7,11,7,true,0
+true,"Cluster State (1D)",12,3479425305,18,9,9,9,9,9,9,true,0
+true,"Cluster State (1D)",12,2213761260,18,9,9,9,9,9,9,true,0
+true,"Cluster State (1D)",12,2344451425,18,9,9,9,9,9,9,true,0
+true,"Cluster State (1D)",12,3612312968,18,7,11,8,10,8,10,false,1
+true,"Cluster State (1D)",16,1920509052,8,7,1,7,1,7,1,true,0
+true,"Cluster State (1D)",16,570480945,8,6,2,6,2,6,2,true,0
+true,"Cluster State (1D)",16,2589413391,8,6,2,7,1,7,1,false,1
+true,"Cluster State (1D)",16,3112734727,8,6,2,6,2,6,2,true,0
+true,"Cluster State (1D)",16,2629682977,8,6,2,5,3,5,3,false,1
+true,"Cluster State (1D)",16,1342755629,8,7,1,7,1,7,1,true,0
+true,"Cluster State (1D)",16,1555708146,8,6,2,7,1,7,1,false,1
+true,"Cluster State (1D)",16,2795392381,8,7,1,7,1,7,1,true,0
+true,"Cluster State (1D)",16,3936731018,16,10,6,10,6,10,6,true,0
+true,"Cluster State (1D)",16,858867924,16,7,9,10,6,10,6,false,3
+true,"Cluster State (1D)",16,644144899,16,12,4,11,5,11,5,false,1
+true,"Cluster State (1D)",16,2560393785,16,11,5,12,4,12,4,false,1
+true,"Cluster State (1D)",16,3719151339,16,10,6,10,6,10,6,true,0
+true,"Cluster State (1D)",16,3012484587,16,11,5,10,6,10,6,false,1
+true,"Cluster State (1D)",16,3703055920,16,9,7,10,6,10,6,false,1
+true,"Cluster State (1D)",16,2065746978,16,11,5,11,5,11,5,true,0
+true,"Cluster State (1D)",16,1122004753,24,11,13,11,13,11,13,true,0
+true,"Cluster State (1D)",16,4180665861,24,13,11,11,13,11,13,false,2
+true,"Cluster State (1D)",16,693381234,24,12,12,13,11,13,11,false,1
+true,"Cluster State (1D)",16,3685968246,24,11,13,10,14,10,14,false,1
+true,"Cluster State (1D)",16,1182398913,24,12,12,11,13,11,13,false,1
+true,"Cluster State (1D)",16,3186382292,24,11,13,11,13,11,13,true,0
+true,"Cluster State (1D)",16,3197733287,24,12,12,11,13,11,13,false,1
+true,"Cluster State (1D)",16,2554966662,24,13,11,13,11,13,11,true,0
+true,"Surface Code",5,3743620119,4,2,2,2,2,2,2,true,0
+true,"Surface Code",5,1406447018,4,2,2,2,2,2,2,true,0
+true,"Surface Code",5,3436595992,4,2,2,2,2,2,2,true,0
+true,"Surface Code",5,1580933887,4,2,2,1,3,1,3,false,1
+true,"Surface Code",5,1155090221,4,2,2,2,2,2,2,true,0
+true,"Surface Code",5,3500643621,4,2,2,2,2,2,2,true,0
+true,"Surface Code",5,4254520774,4,2,2,1,3,1,3,false,1
+true,"Surface Code",5,2645809572,4,2,2,2,2,2,2,true,0
+true,"Surface Code",5,2100909823,8,2,6,2,6,2,6,true,0
+true,"Surface Code",5,3814194407,8,3,5,2,6,2,6,false,1
+true,"Surface Code",5,938707860,8,2,6,2,6,2,6,true,0
+true,"Surface Code",5,4101676924,8,2,6,2,6,2,6,true,0
+true,"Surface Code",5,362770762,8,2,6,2,6,2,6,true,0
+true,"Surface Code",5,2094679949,8,3,5,2,6,2,6,false,1
+true,"Surface Code",5,3902946737,8,2,6,2,6,2,6,true,0
+true,"Surface Code",5,3798626556,8,2,6,2,6,2,6,true,0
+true,"Surface Code",5,2509682870,16,2,14,2,14,2,14,true,0
+true,"Surface Code",5,2487800959,16,2,14,2,14,2,14,true,0
+true,"Surface Code",5,3414797789,16,2,14,2,14,2,14,true,0
+true,"Surface Code",5,650716571,16,2,14,2,14,2,14,true,0
+true,"Surface Code",5,3189163970,16,2,14,2,14,2,14,true,0
+true,"Surface Code",5,3081501952,16,5,11,2,14,2,14,false,3
+true,"Surface Code",5,1714403825,16,2,14,2,14,2,14,true,0
+true,"Surface Code",5,449411044,16,3,13,2,14,2,14,false,1
+true,"Surface Code",8,4248801347,4,2,2,2,2,2,2,true,0
+true,"Surface Code",8,1213638753,4,2,2,2,2,2,2,true,0
+true,"Surface Code",8,379097042,4,2,2,1,3,1,3,false,1
+true,"Surface Code",8,4002939802,4,3,1,2,2,2,2,false,1
+true,"Surface Code",8,3906543601,4,2,2,2,2,2,2,true,0
+true,"Surface Code",8,4115372263,4,3,1,2,2,2,2,false,1
+true,"Surface Code",8,2596210169,4,2,2,2,2,2,2,true,0
+true,"Surface Code",8,3000694401,4,3,1,2,2,2,2,false,1
+true,"Surface Code",8,1636217872,8,3,5,2,6,2,6,false,1
+true,"Surface Code",8,3987606434,8,3,5,2,6,2,6,false,1
+true,"Surface Code",8,2048810367,8,3,5,2,6,2,6,false,1
+true,"Surface Code",8,305804680,8,2,6,2,6,2,6,true,0
+true,"Surface Code",8,159166111,8,2,6,2,6,2,6,true,0
+true,"Surface Code",8,1945008427,8,2,6,2,6,2,6,true,0
+true,"Surface Code",8,1829484269,8,4,4,2,6,2,6,false,2
+true,"Surface Code",8,237057126,8,3,5,2,6,2,6,false,1
+true,"Surface Code",8,3932030644,16,4,12,2,14,2,14,false,2
+true,"Surface Code",8,3663082784,16,3,13,2,14,2,14,false,1
+true,"Surface Code",8,712583797,16,4,12,2,14,2,14,false,2
+true,"Surface Code",8,2405744411,16,3,13,2,14,2,14,false,1
+true,"Surface Code",8,1906026336,16,5,11,2,14,2,14,false,3
+true,"Surface Code",8,4177560775,16,3,13,2,14,2,14,false,1
+true,"Surface Code",8,3728728570,16,4,12,2,14,2,14,false,2
+true,"Surface Code",8,421412786,16,2,14,2,14,2,14,true,0
+true,"Surface Code",13,2074103503,4,3,1,2,2,2,2,false,1
+true,"Surface Code",13,512429945,4,4,0,2,2,2,2,false,2
+true,"Surface Code",13,1195526296,4,4,0,2,2,2,2,false,2
+true,"Surface Code",13,3410919996,4,3,1,1,3,1,3,false,2
+true,"Surface Code",13,1396148744,4,2,2,1,3,1,3,false,1
+true,"Surface Code",13,4005285680,4,4,0,3,1,3,1,false,1
+true,"Surface Code",13,348680792,4,4,0,2,2,2,2,false,2
+true,"Surface Code",13,54152221,4,4,0,2,2,2,2,false,2
+true,"Surface Code",13,2624198297,8,4,4,2,6,2,6,false,2
+true,"Surface Code",13,4039421559,8,4,4,2,6,2,6,false,2
+true,"Surface Code",13,1197976900,8,4,4,2,6,2,6,false,2
+true,"Surface Code",13,1384824766,8,3,5,2,6,2,6,false,1
+true,"Surface Code",13,2310009604,8,5,3,2,6,2,6,false,3
+true,"Surface Code",13,3890292314,8,4,4,3,5,3,5,false,1
+true,"Surface Code",13,1067481880,8,5,3,3,5,3,5,false,2
+true,"Surface Code",13,4167106174,8,4,4,2,6,2,6,false,2
+true,"Surface Code",13,3032376481,16,6,10,3,13,3,13,false,3
+true,"Surface Code",13,2394105091,16,4,12,3,13,3,13,false,1
+true,"Surface Code",13,3614426801,16,6,10,3,13,3,13,false,3
+true,"Surface Code",13,1234099078,16,7,9,3,13,3,13,false,4
+true,"Surface Code",13,1529887620,16,6,10,3,13,3,13,false,3
+true,"Surface Code",13,36297231,16,6,10,3,13,3,13,false,3
+true,"Surface Code",13,3231775995,16,6,10,3,13,3,13,false,3
+true,"Surface Code",13,3423350466,16,6,10,2,14,2,14,false,4
+true,"VQE Hardware-Efficient Ansatz",4,3129844658,198,4,194,4,194,4,194,true,0
+true,"VQE Hardware-Efficient Ansatz",4,1072166866,210,4,206,4,206,4,206,true,0
+true,"VQE Hardware-Efficient Ansatz",4,4161233336,205,4,201,4,201,4,201,true,0
+true,"VQE Hardware-Efficient Ansatz",4,605249395,205,4,201,4,201,4,201,true,0
+true,"VQE Hardware-Efficient Ansatz",4,3362601366,200,4,196,4,196,4,196,true,0
+true,"VQE Hardware-Efficient Ansatz",4,4194370695,200,4,196,4,196,4,196,true,0
+true,"VQE Hardware-Efficient Ansatz",4,564187675,203,4,199,4,199,4,199,true,0
+true,"VQE Hardware-Efficient Ansatz",4,3961475942,208,4,204,4,204,4,204,true,0
+true,"VQE Hardware-Efficient Ansatz",4,2003958538,405,4,401,4,401,4,401,true,0
+true,"VQE Hardware-Efficient Ansatz",4,136101064,405,4,401,4,401,4,401,true,0
+true,"VQE Hardware-Efficient Ansatz",4,2112289630,413,4,409,4,409,4,409,true,0
+true,"VQE Hardware-Efficient Ansatz",4,1680812785,408,4,404,4,404,4,404,true,0
+true,"VQE Hardware-Efficient Ansatz",4,2573454076,411,4,407,4,407,4,407,true,0
+true,"VQE Hardware-Efficient Ansatz",4,3619761374,411,4,407,4,407,4,407,true,0
+true,"VQE Hardware-Efficient Ansatz",4,1503336586,420,4,416,4,416,4,416,true,0
+true,"VQE Hardware-Efficient Ansatz",4,315349260,414,4,410,4,410,4,410,true,0
+true,"VQE Hardware-Efficient Ansatz",4,3040123700,840,4,836,4,836,4,836,true,0
+true,"VQE Hardware-Efficient Ansatz",4,1178279711,824,4,820,4,820,4,820,true,0
+true,"VQE Hardware-Efficient Ansatz",4,3508063468,823,4,819,4,819,4,819,true,0
+true,"VQE Hardware-Efficient Ansatz",4,1603761569,819,4,815,4,815,4,815,true,0
+true,"VQE Hardware-Efficient Ansatz",4,2970874863,827,4,823,4,823,4,823,true,0
+true,"VQE Hardware-Efficient Ansatz",4,2475097411,821,4,817,4,817,4,817,true,0
+true,"VQE Hardware-Efficient Ansatz",4,453048740,824,4,820,4,820,4,820,true,0
+true,"VQE Hardware-Efficient Ansatz",4,3012371534,820,4,816,4,816,4,816,true,0
+true,"VQE Hardware-Efficient Ansatz",6,1195936336,313,6,307,6,307,6,307,true,0
+true,"VQE Hardware-Efficient Ansatz",6,4062626138,302,6,296,6,296,6,296,true,0
+true,"VQE Hardware-Efficient Ansatz",6,2578261889,303,6,297,6,297,6,297,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3939209456,313,6,307,6,307,6,307,true,0
+true,"VQE Hardware-Efficient Ansatz",6,1860981430,308,6,302,6,302,6,302,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3380548763,293,6,287,6,287,6,287,true,0
+true,"VQE Hardware-Efficient Ansatz",6,2094285197,309,6,303,6,303,6,303,true,0
+true,"VQE Hardware-Efficient Ansatz",6,488146166,309,6,303,6,303,6,303,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3373389966,616,6,610,6,610,6,610,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3889430184,620,6,614,6,614,6,614,true,0
+true,"VQE Hardware-Efficient Ansatz",6,2944591487,622,6,616,6,616,6,616,true,0
+true,"VQE Hardware-Efficient Ansatz",6,501893216,615,6,609,6,609,6,609,true,0
+true,"VQE Hardware-Efficient Ansatz",6,4062850598,619,6,613,6,613,6,613,true,0
+true,"VQE Hardware-Efficient Ansatz",6,1679829085,612,6,606,6,606,6,606,true,0
+true,"VQE Hardware-Efficient Ansatz",6,2108049744,605,6,599,6,599,6,599,true,0
+true,"VQE Hardware-Efficient Ansatz",6,2624950695,618,6,612,6,612,6,612,true,0
+true,"VQE Hardware-Efficient Ansatz",6,1498717051,1224,6,1218,6,1218,6,1218,true,0
+true,"VQE Hardware-Efficient Ansatz",6,2257110888,1218,6,1212,6,1212,6,1212,true,0
+true,"VQE Hardware-Efficient Ansatz",6,1287436940,1230,6,1224,6,1224,6,1224,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3093119634,1228,6,1222,6,1222,6,1222,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3558219068,1230,6,1224,6,1224,6,1224,true,0
+true,"VQE Hardware-Efficient Ansatz",6,3426367965,1235,6,1229,6,1229,6,1229,true,0
+true,"VQE Hardware-Efficient Ansatz",6,4202825860,1216,6,1210,6,1210,6,1210,true,0
+true,"VQE Hardware-Efficient Ansatz",6,540804485,1231,6,1225,6,1225,6,1225,true,0
+true,"Grover Search",4,996364796,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,3723045702,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,3744636056,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,2473289339,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,232083648,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,1978415179,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,2015801262,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,4121162144,168,1,95,4,164,4,164,false,3
+true,"Grover Search",4,3139169573,84,1,47,4,80,4,80,false,3
+true,"Grover Search",4,2767158346,84,1,47,4,80,4,80,false,3
+true,"Grover Search",4,1258029148,84,2,46,4,80,4,80,false,2
+true,"Grover Search",4,1967157552,84,2,46,4,80,4,80,false,2
+true,"Grover Search",4,1228874987,84,1,47,4,80,4,80,false,3
+true,"Grover Search",4,878679201,84,2,46,4,80,4,80,false,2
+true,"Grover Search",4,325807974,84,1,47,4,80,4,80,false,3
+true,"Grover Search",4,2098986893,84,2,46,4,80,4,80,false,2
+true,"Grover Search",4,3818736380,42,1,23,4,38,4,38,false,3
+true,"Grover Search",4,3390023056,42,1,23,4,38,4,38,false,3
+true,"Grover Search",4,2142616622,42,1,23,4,38,4,38,false,3
+true,"Grover Search",4,89519362,42,2,22,4,38,4,38,false,2
+true,"Grover Search",4,189935611,42,1,23,4,38,4,38,false,3
+true,"Grover Search",4,964252105,42,1,23,4,38,4,38,false,3
+true,"Grover Search",4,4214699121,42,2,22,4,38,4,38,false,2
+true,"Grover Search",4,1650723209,42,2,22,4,38,4,38,false,2
+true,"Quantum Fourier Transform",4,953238088,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,4270429886,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,1596316615,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,4197788199,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,417233320,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,1743419692,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2696486924,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,1608028881,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3844948357,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3784033438,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2893992052,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2322098023,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2952713444,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2180777444,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3579970269,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,4099936184,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,1239628095,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3073028741,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2370863919,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3554602305,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3015441801,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,240311928,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,3050920163,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",4,2537402977,18,3,3,3,15,3,15,true,0
+true,"Quantum Fourier Transform",6,1356222084,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,3496677719,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,674835558,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,323268027,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,3707776868,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,2389556612,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,1193499481,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,3746971634,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,358027916,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,3458279600,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,2873765351,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,2941283947,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,1097281242,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,1386913866,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,1339773976,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,2055379101,45,4,6,5,40,5,40,false,1
+true,"Quantum Fourier Transform",6,2330781873,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,2507857647,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,1027106056,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,3617348696,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,3659978708,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,2103751647,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,3107694565,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",6,3031506930,36,5,5,5,31,5,31,true,0
+true,"Quantum Fourier Transform",8,4154460697,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,3123178172,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,2266070337,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,601682021,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,513766278,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,2450658087,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,1313286828,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,2880716900,84,7,7,7,77,7,77,true,0
+true,"Quantum Fourier Transform",8,3149198513,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,1204983365,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,4030426931,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,801649303,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,3940873735,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,1297381256,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,1599333270,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,1655723299,75,7,7,7,68,7,68,true,0
+true,"Quantum Fourier Transform",8,3766712929,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,903237322,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,983068104,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,1050375778,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,987385651,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,4180055283,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,2773661713,54,6,8,7,47,7,47,false,1
+true,"Quantum Fourier Transform",8,1088819858,54,6,8,7,47,7,47,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,1228245109,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,1914723218,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,669736328,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,135054671,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,591063074,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,3210270483,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,3937539484,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,3306609559,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,2131579600,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,863273629,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,3908811035,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,4121169474,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,31021011,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,3140993002,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,575793422,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,3723930248,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,1265084759,20,8,12,7,13,7,13,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,1630749929,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,2063471471,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,2422343454,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,1812039124,20,8,12,7,13,8,12,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",8,600237275,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,3267195482,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",8,2276035554,20,7,13,7,13,8,12,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",12,930189558,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,1429406772,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,2789827419,30,11,19,11,19,12,18,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",12,2853784424,30,11,19,11,19,12,18,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",12,3818101877,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,3995915966,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,1911725275,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,617652191,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,3356082101,30,12,18,11,19,11,19,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,594445760,30,11,19,11,19,12,18,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",12,109515420,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,1779176329,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,1610954894,30,12,18,11,19,10,20,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,1853448085,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,3504944780,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,3145814526,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,3981223694,30,11,19,11,19,12,18,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",12,3382532157,30,12,18,11,19,11,19,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,1700905621,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,2002598740,30,12,18,11,19,11,19,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,2625827765,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,61608239,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,956596713,30,12,18,11,19,12,18,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",12,2277063105,30,12,18,11,19,11,19,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1523872386,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,3296747301,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,848924484,40,16,24,15,25,15,25,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2606411984,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1539643628,40,16,24,15,25,15,25,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1667969067,40,16,24,15,25,15,25,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2516795681,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,3269934919,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1476841955,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2644935052,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1567224242,40,16,24,15,25,15,25,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1611726089,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,1764915019,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2265500302,40,16,24,15,25,15,25,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2790205420,40,15,25,15,25,16,24,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",16,234609124,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,3581084330,40,16,24,15,25,15,25,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2662119168,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2845381849,40,15,25,15,25,16,24,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",16,2690504969,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,3218459583,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,364514338,40,15,25,15,25,16,24,true,0
+true,"QAOA MaxCut (p=1, 3-regular)",16,3873465853,40,16,24,15,25,16,24,false,1
+true,"QAOA MaxCut (p=1, 3-regular)",16,2902163775,40,16,24,15,25,16,24,false,1

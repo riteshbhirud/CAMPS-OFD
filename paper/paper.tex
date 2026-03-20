@@ -1,0 +1,1090 @@
+\documentclass[a4paper,twocolumn,11pt]{quantumarticle}
+\pdfoutput=1
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Observation}
+
+\begin{document}
+
+\title{Structure-Dependent Classical Simulability of Quantum Algorithms via GF(2) Null Space Analysis}
+
+\author{Author Name}
+\affiliation{Manning College of Information and Computer Sciences, University of Massachusetts Amherst, 140 Governors Drive, Amherst, Massachusetts 01003, USA}
+\email{email}
+
+
+
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+
+Clifford-augmented matrix product states (CAMPS) simulate quantum circuits by combining stabilizer tracking with matrix product states, using optimization-free disentangling (OFD) when the GF(2) null space structure permits.
+We classify 14 circuit families into three scaling classes based on the GF(2) nullity ratio $\nu/t$: OFD-friendly (random circuits, $\nu/t \to 0$), OFD-hostile (QFT, VQE, Grover; $\nu/t \to 1$), and intermediate, whose limiting ratios we trace to a backbone sampling mechanism with a birthday-effect prediction verified to within $4.4\%$.
+We prove a bond dimension bound $\chi \le 2^\nu$, show that repeated-block circuits are generically OFD-hostile, characterize the Z-type obstruction for controlled-rotation circuits, and establish an exact rank identity $\mathrm{rank}(z_{\mathrm{QFT}}) = N - 1$: the first such result for a structured circuit family.
+Validation against 936 simulations yields Pearson $r = 0.95$ between predicted and empirical OFD success rates, and GF(2) pre-screening eliminates 95--99\% of futile OFD attempts for structured algorithms.
+We release the first open-source CAMPS implementation (OFD + OBD) in Julia.
+\end{abstract}
+
+%% ============================================================
+\section{Introduction}
+\label{sec:intro}
+%% ============================================================
+
+Classical simulation of quantum circuits is essential for validating quantum hardware, developing quantum algorithms, and understanding the boundary between classical and quantum computational power.
+The Gottesman--Knill theorem establishes that circuits composed solely of Clifford gates can be efficiently simulated classically using the stabilizer formalism~\cite{Gottesman1998,Aaronson2004}, but universal quantum computation requires non-Clifford gates such as the T-gate.
+Understanding which Clifford+T circuits admit efficient classical simulation and which do not is a central question in quantum complexity theory.
+
+Matrix product states (MPS) provide a powerful framework for classical simulation, representing quantum states as tensor networks with bounded bond dimension $\chi$~\cite{Schollwock2011,White1992,Vidal2003}.
+The computational cost scales polynomially with $\chi$, but highly entangled states require exponentially large bond dimensions.
+Recently, Clifford-augmented matrix product states (CAMPS) have emerged as a method combining stabilizer tracking with MPS to exploit the structure of Clifford+T circuits~\cite{Liu2024,Qian2024,MelloTDVP2025,Mello2024}.
+In the CAMPS framework, a quantum state is decomposed as $|\psi\rangle = C|\phi\rangle$ where $C$ is a Clifford circuit tracked via stabilizer tableaux at cost $O(N^2)$ and $|\phi\rangle$ is an MPS whose bond dimension depends on the non-Clifford content.
+
+The critical algorithmic component of CAMPS is the \emph{disentangling} step: when a T-gate is absorbed into the CAMPS representation, its effect on the MPS component can either be handled cheaply via optimization-free disentangling (OFD)~\cite{Liu2024} or expensively via optimization-based disentangling (OBD)~\cite{Qian2024}.
+OFD offers speedups of $10^4$--$10^5\times$ over OBD, but succeeds only when an algebraic condition related to the GF(2) null space of a binary matrix is satisfied.
+Liu and Clark~\cite{Liu2024} showed that for \emph{random} Clifford+T circuits with $t \le N$ T-gates on $N$ qubits, OFD succeeds with high probability, establishing that such circuits are efficiently simulable.
+However, the circuits practitioners care about, such as QFT, VQE, Grover search, and QAOA, are highly structured, and the behavior of OFD on these circuits has remained an open question.
+
+In this work, we provide a comprehensive answer by studying the GF(2) null space structure across circuit families at scale.
+Our contributions are fivefold:
+
+\textbf{(1) GF(2) null space scaling classification.}
+We compute the GF(2) matrix for 14 circuit families at system sizes up to $N = 256$ qubits, revealing three distinct scaling classes: OFD-friendly circuits where the nullity ratio $\nu/t \to 0$, OFD-hostile circuits where $\nu/t \to 1$, and intermediate circuits where $\nu/t$ converges to a constant.
+This classification, which requires only stabilizer operations and runs in seconds even at $N = 256$, predicts CAMPS simulability without performing the expensive MPS simulation.
+
+\textbf{(2) Structural theorems.}
+We formalize the connection between GF(2) rank and CAMPS bond dimension (Theorem~\ref{thm:bond_dim}), prove that repeated-block circuits are OFD-hostile with nullity growing linearly in repetitions (Proposition~\ref{prop:repeated_block}), and characterize the Z-type obstruction that makes controlled-rotation circuits produce GF(2)-trivial rows (Observation~\ref{prop:z_type}).
+For QFT, we prove that each controlled rotation contributes $O(1)$ independent GF(2) rows (Proposition~\ref{prop:qft_rotation}), and establish an exact rank identity $\mathrm{rank}(z_{\mathrm{QFT}}) = N - 1$ (Theorem~\ref{thm:qft_rank}).
+The proof shows that the sequential structure of the QFT ensures the last qubit never acquires $X/Y$ content in any twisted Pauli, while each of the other $N - 1$ qubits contributes exactly one independent row.
+For the intermediate class, we identify a backbone sampling architecture and prove that the GF(2) rank is bounded by the backbone's $G$-block rank (Proposition~\ref{prop:backbone_bound}), with the classical birthday effect predicting $\nu/t \to 1/e$ for full-rank backbones---a prediction matching two families to within $4.4\%$ at $N = 64$, with monotonic convergence toward $1/e$ (Corollary~\ref{cor:birthday}).
+
+\textbf{(3) Practical GF(2)-guided simulation improvements.}
+We demonstrate that computing the GF(2) matrix as a pre-screening step eliminates 95--99\% of futile OFD attempts for structured algorithms and 12--18\% for random circuits, providing immediate computational savings.
+
+\textbf{(4) Empirical validation.}
+We validate GF(2) predictions against 936 small-scale CAMPS simulations (OFD + OBD), obtaining Pearson $r = 0.95$ between predicted and empirical OFD success rates.
+Under pure OFD (no OBD fallback), the structural bound $\chi \le 2^{t-m}$ holds across all 330 tested circuits, with greedy circuit-order OFD achieving the optimal bound $\chi \le 2^\nu$ in 96.7\% of cases.
+
+\textbf{(5) Open-source implementation.}
+We provide an open-source implementation of the full CAMPS simulation pipeline (OFD + OBD) in Julia, built on QuantumClifford.jl and ITensorMPS.jl, together with GF(2) analysis tools and benchmarking scripts for all 14 circuit families.
+
+The remainder of this paper is organized as follows.
+Section~\ref{sec:background} reviews CAMPS formalism, GF(2) characterization, and related work.
+Section~\ref{sec:classification} presents the scaling classification.
+Section~\ref{sec:structure} develops the formal results.
+Section~\ref{sec:practical} describes practical improvements.
+Section~\ref{sec:validation} provides small-scale empirical validation.
+Sections~\ref{sec:discussion}--\ref{sec:conclusion} discuss implications and conclude.
+
+%% ============================================================
+\section{Background}
+\label{sec:background}
+%% ============================================================
+
+\subsection{Clifford-Augmented Matrix Product States}
+
+A CAMPS representation decomposes an $N$-qubit quantum state as
+\begin{equation}
+\label{eq:camps}
+|\psi\rangle = C|\phi\rangle,
+\end{equation}
+where $C$ is a Clifford circuit represented by a stabilizer tableau~\cite{Aaronson2004} and $|\phi\rangle$ is a matrix product state with bond dimension $\chi$.
+The Clifford component supports arbitrary stabilizer entanglement at cost $O(N^2)$, while the MPS captures residual non-stabilizer structure.
+
+When a T-gate acts on qubit $q_k$, we use the decomposition $T = \alpha I + \beta Z$ (with $\alpha = e^{i\pi/8}\cos(\pi/8)$, $\beta = -ie^{i\pi/8}\sin(\pi/8)$) to write
+\begin{equation}
+\label{eq:tgate_absorption}
+T_{q_k} C|\phi\rangle = C'(\alpha I + \beta \bar{Z}^{[k]})|\phi\rangle,
+\end{equation}
+where $C'$ is the updated Clifford circuit and $\bar{Z}^{[k]} = C_k^\dagger Z_{q_k} C_k$ is the \emph{twisted Pauli string}, defined as the image of $Z_{q_k}$ under conjugation by the cumulative Clifford circuit $C_k$ preceding the $k$-th T-gate.
+The operator $(\alpha I + \beta \bar{Z}^{[k]})$ must be applied to $|\phi\rangle$; if $\bar{Z}^{[k]}$ has multi-qubit support, this generically increases the bond dimension.
+
+\emph{Optimization-free disentangling (OFD)}~\cite{Liu2024} avoids this bond dimension increase when there exists a qubit $i$ that is simultaneously (a) in a product state within $|\phi\rangle$ (a ``free'' qubit), and (b) has an $X$ or $Y$ component in $\bar{Z}^{[k]}$.
+When such a qubit exists, a controlled-Pauli disentangler (a Clifford gate absorbed into the frame $C'$) reduces $\bar{Z}^{[k]}$ to a single-qubit operator, absorbing the T-gate at no bond dimension cost.
+When no such qubit exists, OFD fails, and the naive absorption of $(\alpha I + \beta \bar{Z}^{[k]})$ into the MPS at most doubles the bond dimension.
+An alternative fallback is \emph{optimization-based disentangling (OBD)}~\cite{Qian2024}, which searches over two-qubit Clifford gates to minimize entanglement growth, but at $10^4$--$10^5\times$ higher computational cost.
+
+More generally, the CAMPS framework applies to any non-Clifford gate expressible as $\alpha I + \beta P$ for a Pauli operator $P$.
+An arbitrary $R_z(\theta)$ gate decomposes as $R_z(\theta) = e^{i\theta/2}(\cos(\theta/2)\, I - i\sin(\theta/2)\, Z)$, yielding the same OFD/OBD structure with $\bar{Z}^{[k]} = C_k^\dagger Z_{q_k} C_k$.
+Throughout this work, we refer to any non-Clifford $R_z(\theta)$ gate as a ``non-Clifford gate'' in the GF(2) analysis; the term ``T-gate'' is used when the angle is specifically $\pi/4$.
+
+\subsection{GF(2) Characterization of OFD}
+\label{sec:gf2_background}
+
+The success or failure of OFD across all non-Clifford gates in a circuit is governed by a binary matrix over GF(2).
+
+\begin{definition}[GF(2) matrix]
+\label{def:gf2_matrix}
+For a Clifford+non-Clifford circuit on $N$ qubits with $t$ non-Clifford gates, the \emph{GF(2) matrix} $z \in \mathbb{F}_2^{t \times N}$ has entries
+\begin{equation}
+\label{eq:gf2_entry}
+z_{k,j} = \begin{cases} 1 & \text{if qubit $j$ of } \bar{Z}^{[k]} \text{ has Pauli type $X$ or $Y$,} \\ 0 & \text{if qubit $j$ of } \bar{Z}^{[k]} \text{ has Pauli type $I$ or $Z$,} \end{cases}
+\end{equation}
+where $\bar{Z}^{[k]} = C_k^\dagger Z_{q_k} C_k$ is the $k$-th twisted Pauli string and $C_k$ is the Clifford sub-circuit consisting of all Clifford gates preceding the $k$-th non-Clifford gate.
+\end{definition}
+
+The GF(2) rank of $z$ determines the maximum number of non-Clifford gates guaranteed disentanglable via OFD, and the nullity $\nu = t - \mathrm{rank}(z)$ provides an upper bound on the number that must fall back to expensive alternatives.
+Liu and Clark~\cite{Liu2024} showed that for random Clifford+T circuits with $t = N$ T-gates at depth $d \ge N/4$, $\mathrm{rank}(z) \approx N - 0.85$ with high probability, where $0.85$ is the expected nullity of a random $N \times N$ binary matrix over $\mathbb{F}_2$.
+
+\subsection{Stabilizer Tableau Computation}
+\label{sec:tableau}
+
+The GF(2) matrix can be computed efficiently using stabilizer tableaux~\cite{Aaronson2004}.
+A stabilizer tableau for an $N$-qubit Clifford circuit $C$ stores $2N$ generators: destabilizers $\{d_i\}_{i=1}^N$ and stabilizers $\{s_i\}_{i=1}^N$, each an $N$-qubit Pauli operator encoded as a pair of $N$-bit binary vectors $(x_i, z_i)$ plus a phase bit.
+The stabilizer row for qubit $q$ encodes the image $C^\dagger Z_q C$, with the $x$-bits giving exactly row $q$ of the GF(2) matrix.
+Concretely, $z_{k,j}$ equals the $x$-bit at position $j$ of the $(N+q_k)$-th row of the tableau after applying all Clifford gates preceding the $k$-th non-Clifford gate~\cite{Dehaene2003}.
+
+This connection to the symplectic formulation of the Clifford group is central to our structural analysis.
+The Clifford group on $N$ qubits has a faithful representation as the binary symplectic group $\mathrm{Sp}(2N, \mathbb{F}_2)$~\cite{Dehaene2003}.
+Each Clifford operator $C$ corresponds to a $2N \times 2N$ symplectic matrix
+\begin{equation}
+\label{eq:symplectic}
+S_C = \begin{pmatrix} A & B \\ G & H \end{pmatrix},
+\end{equation}
+where the blocks are $N \times N$ binary matrices satisfying the symplectic condition $S_C^T \Omega S_C = \Omega$ with $\Omega = \bigl(\begin{smallmatrix} 0 & I \\ I & 0 \end{smallmatrix}\bigr)$.
+The image of $Z_{q}$ under conjugation $C^\dagger Z_q C$ has $x$-bits given by row $q$ of the $G$-block~\cite{Dehaene2003}.
+Thus $z_{k,j} = G^{(k)}_{q_k,j}$, where $G^{(k)}$ is the $G$-block of the symplectic matrix for $C_k$.
+
+The linearity of the symplectic representation, in which composition of Cliffords corresponds to matrix multiplication over $\mathbb{F}_2$, is the key algebraic fact underlying our structural results.
+
+\subsection{Related Work}
+
+CAMPS was introduced by Qian, Huang, and Qin~\cite{Qian2024} for ground-state simulation of quantum spin chains, with OBD as the disentangling strategy.
+Liu and Clark~\cite{Liu2024} developed the OFD algorithm and the GF(2) characterization for circuit simulation, establishing efficient simulability of random Clifford+T circuits.
+Extensions include Clifford-augmented time-dependent variational principle (CA-TDVP)~\cite{Qian2024b}, Clifford-dressed TDVP with iterative two-qubit Clifford sweeps for entanglement reduction during Hamiltonian dynamics~\cite{MelloTDVP2025}, and applications to noisy circuit simulation~\cite{Mello2024}.
+
+Competing classical simulation approaches include stabilizer tensor networks (STN)~\cite{MasotLlima2024}, which decompose states into sums of stabilizer states with MPS-like structure, and low-rank stabilizer decomposition methods~\cite{Bravyi2019,BravyiGosset2016}, which extend the stabilizer formalism to circuits with non-Clifford gates.
+Pauli propagation methods~\cite{PauliProp2019} offer alternative approaches via Heisenberg-picture evolution.
+
+Our work connects to the broader study of nonstabilizerness (magic) and its relationship to classical simulability.
+Zhang and Zhang~\cite{Zhang2025} established sharp complexity transitions as a function of \emph{magic depth}, the number of non-Clifford layers, showing that T-depth 1 circuits allow polynomial-time Pauli expectation evaluation, while T-depth 2 is GapP-complete.
+Fux \emph{et al.}~\cite{Fux2025} analyzed disentangling magic states through a quantum error correction lens, showing complete disentangling when $t \lesssim N - 1.6$.
+Frau \emph{et al.}~\cite{Frau2025} classified ground states of conformal field theories into fully, locally, and non-locally Clifford-disentanglable (fLCD, LCD, nLCD) classes based on how effectively local Clifford sweeps reduce entanglement, a state-level classification that has suggestive parallels with our circuit-level GF(2)-based taxonomy.
+
+The nonstabilizerness entanglement entropy framework~\cite{Huang2025,Turkeshi2025} provides complementary measures of how non-Clifford gates generate entanglement in the MPS component, while T-gate compilation theory~\cite{Ross2016,Vandaele2025} governs the T-gate count scaling that determines the dimensions of our GF(2) matrices.
+
+%% ============================================================
+\section{GF(2) Null Space Scaling Classification}
+\label{sec:classification}
+%% ============================================================
+
+We now present our main empirical result: a scaling classification of quantum circuit families based on the asymptotic behavior of the GF(2) nullity ratio $\nu(N)/t(N)$ as the system size $N$ grows.
+
+\subsection{Methodology}
+
+For each circuit family and system size $N$, we construct the gate-level circuit, build the GF(2) matrix $z$ via stabilizer tableau propagation (Definition~\ref{def:gf2_matrix}), and compute its rank via Gaussian elimination over $\mathbb{F}_2$.
+Each circuit family uses a standard Clifford+non-Clifford decomposition: random circuits inject T-gates ($R_z(\pi/4)$) at specified positions; structured state preparations (GHZ, Bell, graph, cluster, surface code) use the standard Toffoli decomposition requiring 7 T-gates per Toffoli~\cite{Selinger2013}; and QFT decomposes each controlled-$R_m$ gate ($m \ge 2$) as
+\begin{equation}
+\label{eq:cr_decomp}
+R_z\!\left(\frac{\theta}{2}\right)_t \cdot \mathrm{CNOT}(c,t) \cdot R_z\!\left(\!-\frac{\theta}{2}\right)_t \cdot \mathrm{CNOT}(c,t) \cdot R_z\!\left(\frac{\theta}{2}\right)_c
+\end{equation}
+(gates listed in temporal order, left to right) with exact angle $\theta = 2\pi/2^m$, yielding three $R_z$ gates (two on the target qubit $t$ and one on the control qubit $c$) and two CNOTs per controlled rotation, where each $R_z$ with angle not a multiple of $\pi/2$ is treated as a single non-Clifford gate in the GF(2) analysis.\footnote{The first $R_z(\theta/2)_t$ on the target qubit occurs before either CNOT, when the target has not yet received its Hadamard, producing a Z-type twisted Pauli (zero $x$-bits) that contributes a zero row to the GF(2) matrix. The effective rank contribution per controlled rotation comes from the remaining two $R_z$ gates (Proposition~\ref{prop:qft_rotation}). The VQE benchmark uses a heuristic Clifford+T decomposition of $R_y(\theta)$ gates that does not precisely implement the intended rotation angles. However, VQE's Class~II membership follows from Proposition~\ref{prop:repeated_block} independently of the specific decomposition: any circuit with $r$ repeated blocks of $g > N$ non-Clifford gates satisfies $\nu/t \ge 1 - 1/r$ regardless of gate angles.}
+
+This analysis relies \emph{only} on stabilizer tableau operations and requires no MPS computations.
+The cost is $O(N^2 t)$ for tableau propagation plus $O(\min(t,N)^2 \max(t,N))$ for GF(2) elimination, completing in seconds even for the largest configurations ($N = 256$, $t \approx 80{,}000$ for QFT).
+This efficiency is central to our methodology: GF(2) analysis serves as a fast predictor of CAMPS simulability, running orders of magnitude faster than the actual CAMPS simulation.
+
+We benchmark 14 circuit families spanning random circuits, standard quantum algorithms, and structured state preparations:
+\emph{Random circuits}: random Clifford+T with all-to-all (A2A) and brick-wall connectivity, with $t = N$ T-gates;
+\emph{Quantum algorithms}: QFT, Grover search, VQE with hardware-efficient ansatz, QAOA for MaxCut, Bernstein--Vazirani, Deutsch--Jozsa, Simon's algorithm;
+\emph{Structured states}: GHZ, Bell, graph, cluster, and surface code states.
+System sizes range from $N = 4$ to $N = 64$ qubits for most families, with QFT and VQE extending to $N = 256$, and 4 random instances per configuration for stochastic families.
+
+\subsection{Three Scaling Classes}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure1.png}
+    \caption{GF(2) null space scaling classification. The nullity ratio $\nu/t$ as a function of qubit count $N$ reveals three distinct classes: OFD-hostile circuits (top band, $\nu/t \to 1$), intermediate circuits, and OFD-friendly circuits (bottom, $\nu/t \to 0$). The separation sharpens with increasing $N$, establishing a predictive classification of CAMPS simulability. QAOA uses angles $\gamma = \pi/4$, $\beta = \pi/8$; of the $5N/2$ total rotation gates, only the $N$ mixer rotations are non-Clifford, but the GF(2) analysis processes all rotation gates, yielding $\nu/t \to 3/5$. QFT includes all controlled-$R_m$ rotations ($m \le N$), giving $\nu/t = 0.997$ at $N = 256$ (Table~\ref{tab:qft_rank}).}
+    \label{fig:scaling}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure2.png}
+    \caption{Absolute nullity $\nu(N)$ on a log--log scale. QFT and VQE exhibit super-linear nullity growth ($\nu \sim N^2$ for QFT), while random circuits maintain constant nullity $\nu \approx 0.85$ independent of $N$. The divergent scaling between families confirms that the classification in Fig.~\ref{fig:scaling} reflects fundamentally different algebraic structure, not merely finite-size effects.}
+    \label{fig:nullity_growth}
+\end{figure}
+
+Figure~\ref{fig:scaling} displays the nullity ratio $\nu(N)/t(N)$ as a function of system size for all 14 families, revealing a striking three-class structure:
+
+\textbf{Class~I (OFD-friendly):} Random Clifford+T circuits with $t = N$ T-gates.
+As $N$ grows, the nullity ratio decreases toward zero, with $\nu/t \approx 0.85/N$, because the absolute nullity remains approximately constant at $\nu \approx 0.85$, corresponding to the expected nullity of a random $N \times N$ binary matrix~\cite{Liu2024}.
+These circuits are efficiently simulable via CAMPS with OFD; the bond dimension bound gives $\chi_{\mathrm{OFD}} \le 2^{0.85} < 2$.
+
+\textbf{Class~II (OFD-hostile):} QFT, VQE (multi-layer), and Grover search (multi-iteration).
+The nullity ratio converges to 1 as $N$ grows, meaning essentially all non-Clifford gates fall in the null space and OFD provides no benefit.
+QFT has $\nu/t > 0.91$ for $N \ge 8$, reaching $0.997$ at $N = 256$ (Table~\ref{tab:qft_rank}); VQE and Grover approach $\nu/t \ge 0.99$.
+For these circuits, CAMPS simulation must rely entirely on the slow OBD procedure or alternative strategies.
+
+\textbf{Class~III (intermediate):} QAOA, Bernstein--Vazirani, Deutsch--Jozsa, Simon's, Bell states, graph states, cluster states, and surface codes.
+The nullity ratio converges to a constant strictly between 0 and 1 for the families with analytical predictions; surface codes show a slowly increasing ratio ($\nu/t \approx 0.78$ at $N = 50$) whose asymptotic class requires further study.
+These circuits derive partial benefit from OFD; the fraction of disentanglable non-Clifford gates is neither negligible nor dominant.
+Most Class~III families share a \emph{backbone sampling} architecture that quantitatively explains their limiting nullity ratios (Section~\ref{sec:backbone}); QAOA is structurally distinct, with its limiting ratio $\nu/t \to 3/5$ arising from rank saturation at $N$ with $t = 5N/2$ total rotation gates (Remark~\ref{rem:qaoa}).
+GHZ states have backbone rank $r_G = 1$, giving $\mathrm{rank}(z) = 1$ for all $N$ tested and $\nu/t = (N-1)/N \to 1$, placing them at the boundary of Class~II (see Section~\ref{sec:backbone}).
+
+Figure~\ref{fig:nullity_growth} shows the absolute nullity on a log--log scale, revealing the growth rates underlying each class.
+QFT exhibits quadratic nullity growth $\nu \sim N^2$ (matching its $O(N^2)$ non-Clifford gate count), while random circuits maintain $\nu \approx 0.85$ independent of $N$.
+The intermediate class shows linear to sub-linear growth.
+These divergent scaling behaviors confirm that the classification reflects fundamentally different algebraic structure, not finite-size effects.
+
+\begin{definition}[Scaling classes]
+\label{def:classes}
+A circuit family $\mathcal{F}$ belongs to Class~I if $\lim_{N\to\infty} \nu(N)/t(N) = 0$, Class~II if $\lim_{N\to\infty} \nu(N)/t(N) = 1$, and Class~III if the limit exists and lies in $(0,1)$.
+\end{definition}
+
+The classification has immediate practical significance: Class~I circuits are efficiently simulable via CAMPS with OFD, Class~II circuits gain no OFD benefit and require alternative simulation strategies, and Class~III circuits benefit from OFD in proportion to their limiting nullity ratio.
+Importantly, the class membership can be determined \emph{before} any MPS simulation, using only the $O(N^2 t)$-cost GF(2) analysis.
+
+\emph{Role of non-Clifford gate density.}
+Since $\mathrm{rank}(z) \le N$, any circuit family with $t(N)/N \to \infty$ automatically has $\nu/t \to 1$ and is Class~II.
+Our Class~II algorithms, including QFT ($t = 3N(N-1)/2$), multi-layer VQE ($t = O(rN)$ with $r > 1$), and multi-iteration Grover ($t = O(\sqrt{2^N} \cdot N)$), all have non-Clifford gate counts that grow faster than $N$, and therefore their Class~II membership follows directly from the rank bound (Proposition~\ref{prop:repeated_block}).
+Random circuits with $t \gg N$ would likewise be Class~II.
+The classification's non-trivial content lies in the \emph{intermediate} regime $t = \Theta(N)$: here, random circuits achieve near-full rank $\mathrm{rank} \approx N$ (Class~I), while the algebraic structure of specific algorithms could in principle produce rank-deficient GF(2) matrices even at $t = N$.
+The structural theorems in Section~\ref{sec:structure} go beyond the coarse $t/N$ ratio to explain \emph{why} rank saturates (repeated-block structure, Z-type obstruction) and \emph{how} it grows for QFT (Theorem~\ref{thm:qft_rank}), providing finer-grained predictions than the rank bound alone.
+
+%% ============================================================
+\section{Structural Analysis}
+\label{sec:structure}
+%% ============================================================
+
+We now develop formal results explaining the scaling classification.
+We first formalize the bond dimension bound implicit in Liu and Clark's framework, then prove a repeated-block result explaining Class~II membership for VQE and Grover, characterize the Z-type obstruction mechanism, prove a per-rotation rank bound for QFT, establish an exact rank identity for the QFT circuit, and identify a backbone sampling mechanism explaining the intermediate class.
+
+\subsection{Bond Dimension Bound}
+
+The following theorem formalizes the bond dimension analysis developed across Liu and Clark's OFD framework~\cite{Liu2024}, connecting the GF(2) nullity directly to worst-case CAMPS bond dimension.
+
+\begin{theorem}[OFD bond dimension bound]
+\label{thm:bond_dim}
+Let $z \in \mathbb{F}_2^{t \times N}$ be the GF(2) matrix of a Clifford+non-Clifford circuit on $N$ qubits with $t$ non-Clifford gates (Definition~\ref{def:gf2_matrix}).
+There exists a gate processing order under which OFD succeeds for at least $\mathrm{rank}_{\mathbb{F}_2}(z)$ gates.
+For any processing order in which $m$ gates succeed via OFD, the resulting CAMPS bond dimension satisfies
+\begin{equation}
+\label{eq:bond_bound}
+\chi_{\mathrm{OFD}} \le 2^{t - m}.
+\end{equation}
+In particular, taking $m \ge \mathrm{rank}(z)$:
+\begin{equation}
+\label{eq:bond_bound_rank}
+\chi_{\mathrm{OFD}} \le 2^{t - \mathrm{rank}_{\mathbb{F}_2}(z)} = 2^{\nu},
+\end{equation}
+where $\nu = \dim(\ker(z))$ is the GF(2) nullity.
+\end{theorem}
+
+\begin{proof}
+We establish the three claims in sequence.
+
+\emph{Claim 1: At least $r = \mathrm{rank}(z)$ gates can be disentangled.}
+Compute the reduced row echelon form (RREF) of $z$, with pivot positions at columns $j_1 < j_2 < \cdots < j_r$.
+Process non-Clifford gates corresponding to pivot rows in order $k_1, k_2, \ldots, k_r$.
+For gate $k_i$: by the RREF structure, $z_{k_i, j_i} = 1$ and $z_{k_\ell, j_i} = 0$ for all $\ell < i$.
+This means qubit $j_i$ has an $X$ or $Y$ component in the twisted Pauli $\bar{Z}^{[k_i]}$.
+Since the initial MPS has all qubits in product states, and OFD for gate $k_\ell$ ($\ell < i$) consumes qubit $j_\ell \ne j_i$ (the OFD disentangler modifies only the Clifford frame, not the MPS tensor structure on other qubits), qubit $j_i$ remains free when gate $k_i$ is processed.
+Furthermore, the $x$-bit at position $j_i$ in the twisted Pauli $\bar{Z}^{[k_i]}$ is preserved under prior frame modifications.
+The OFD disentangler for gate $k_\ell$ ($\ell < i$) is a product of controlled-Pauli gates with control qubit $j_\ell$; in the Aaronson--Gottesman convention, $\mathrm{CNOT}(j_\ell \to q)$ updates $x$-bits as $G[\cdot,q] \leftarrow G[\cdot,q] \oplus G[\cdot,j_\ell]$, while $\mathrm{CPHASE}$ and single-qubit phase gates leave $x$-bits unchanged.
+Thus only columns $q$ with $z_{k_\ell, q} = 1$ are modified.
+By the RREF structure, $z_{k_\ell, j_i} = 0$ for $i \ne \ell$ (later pivot columns are zeroed in earlier pivot rows), so column $j_i$ is unmodified by $D_\ell$.
+By induction over $\ell = 1, \ldots, i-1$, the $x$-bit $z_{k_i, j_i} = 1$ is preserved in the frame-modified tableau.
+Therefore OFD succeeds: the disentangler maps $\bar{Z}^{[k_i]}$ to a single-qubit operator on qubit $j_i$, and the bond dimension is unchanged.
+
+\emph{Claim 2: Each OFD failure at most doubles $\chi$.}
+When OFD fails for gate $k$, the operator $(\alpha I + \beta \bar{Z}^{[k]})$ is applied directly to $|\phi\rangle$, yielding $\alpha|\phi\rangle + \beta \bar{Z}^{[k]}|\phi\rangle$.
+Since $\bar{Z}^{[k]}$ is a tensor product of single-qubit Paulis, it preserves the MPS structure with identical bond dimension~\cite{Schollwock2011}.
+By the triangle inequality for MPS bond dimensions, the sum has bond dimension at most $2\chi$.
+
+\emph{Claim 3: Combined bound.}
+Starting from $\chi_0 = 1$ (product state), $m$ OFD successes contribute $\chi \to \chi$ (unchanged) and $t - m$ OFD failures contribute $\chi \to 2\chi$ each, giving $\chi \le 2^{t-m} \cdot 1 = 2^{t-m}$.
+Since $m \ge r = \mathrm{rank}(z)$ is achievable by Claim~1, the bound $\chi \le 2^{t-r} = 2^\nu$ follows.
+\end{proof}
+
+\begin{remark}[Tightness of the rank bound]
+\label{rem:matching}
+The bound $\chi \le 2^\nu$ is conservative: the actual maximum number of OFD successes can exceed $\mathrm{rank}(z)$.
+An OFD success for gate $k$ requires a free qubit $j$ with $z_{k,j} = 1$; each success consumes a distinct qubit.
+The maximum number of successes is therefore the size of a maximum matching in the bipartite graph with edges $\{(k,j) : z_{k,j} = 1\}$, which can exceed $\mathrm{rank}_{\mathbb{F}_2}(z)$ in general.
+Nevertheless, the GF(2) rank provides an algebraically computable lower bound that closely tracks empirical OFD success (Pearson $r = 0.95$; see Section~\ref{sec:validation}).
+For the bond dimension \emph{upper bound}, the distinction is immaterial: $\chi \le 2^{t-m} \le 2^{t - \mathrm{rank}(z)} = 2^\nu$ for any achievable $m \ge \mathrm{rank}(z)$.
+\end{remark}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure3.png}
+    \caption{Bond dimension bound validation (Theorem~\ref{thm:bond_dim}). \textbf{(a)} Log-scale comparison of final bond dimension $\chi$ versus nullity $\nu$, with the bound $\chi \le 2^\nu$ shown as the diagonal. All 936 circuits (OFD + OBD hybrid strategy) satisfy the bound; under pure OFD, the structural bound $\chi \le 2^{t-m}$ holds universally (Section~\ref{sec:bound_tightness}). \textbf{(b)} Tightness ratio $\log_2(\chi)/\nu$ by circuit family, grouped by category (random, algorithm, state preparation). The bound is tightest for random circuits; the looseness for structured algorithms is a finite-size effect (see Section~\ref{sec:bound_tightness}).}
+    \label{fig:bound_validation}
+\end{figure}
+
+Figure~\ref{fig:bound_validation} validates the bound against 936 CAMPS simulations (Section~\ref{sec:bound_tightness}).
+
+\begin{remark}[Predictive vs.\ descriptive value]
+\label{rem:predictive}
+The bound's primary value is \emph{predictive}: it enables assessment of CAMPS simulability from the GF(2) matrix alone, before any MPS computation.
+In practice, OBD fallback may yield much smaller bond dimensions (Section~\ref{sec:validation}), but the nullity ratio still governs the \emph{time cost} (fraction of gates requiring slow OBD), while the bound governs the worst-case \emph{space cost} (bond dimension).
+\end{remark}
+
+\subsection{Repeated-Block Circuits}
+\label{sec:repeated_block}
+
+Many quantum algorithms, such as VQE, QAOA, Grover search, and Trotter circuits, are composed of repeated applications of a fixed block.
+The following proposition shows that such circuits are generically OFD-hostile whenever the block contains more non-Clifford gates than qubits.
+
+\begin{proposition}[Repeated-block nullity]
+\label{prop:repeated_block}
+Consider a circuit on $N$ qubits consisting of $r$ repetitions of a block $B$ containing $g$ non-Clifford gates, with Clifford layers $C_1, C_2, \ldots, C_{r-1}$ interleaving the blocks.
+The GF(2) rank satisfies
+\begin{equation}
+\label{eq:rank_upper}
+\mathrm{rank}(z) \le N,
+\end{equation}
+and consequently the nullity satisfies
+\begin{equation}
+\label{eq:repeated_nullity}
+\nu \ge \max(0,\; rg - N).
+\end{equation}
+When $g \ge N$, the nullity ratio satisfies $\nu/t \ge 1 - 1/r$, which approaches $1$ as $r \to \infty$.
+\end{proposition}
+
+\begin{proof}
+The GF(2) matrix $z$ has $t = rg$ rows and $N$ columns.
+Since $z \in \mathbb{F}_2^{rg \times N}$, the rank satisfies $\mathrm{rank}(z) \le \min(rg, N) \le N$.
+Therefore $\nu = rg - \mathrm{rank}(z) \ge rg - N$.
+
+When $g \ge N$: $\nu/t = 1 - \mathrm{rank}(z)/(rg) \ge 1 - N/(rg) \ge 1 - 1/r$.
+\end{proof}
+
+While the bound follows from the elementary fact that an $N$-column binary matrix has rank at most $N$, its implications are significant: any circuit with $rg > N$ has OFD-hostile non-Clifford gates \emph{regardless of the specific circuit structure}.
+For VQE with $g \approx 2N$ non-Clifford gates per layer and $r = 10$ layers, the nullity ratio satisfies $\nu/t \ge 1 - N/(20N) = 0.95$, explaining VQE's Class~II membership.
+
+The bound can be understood more deeply through the block structure.
+The GF(2) matrix decomposes as $z = (z^{(1)\top}, z^{(2)\top}, \ldots, z^{(r)\top})^\top$ where $z^{(k)} \in \mathbb{F}_2^{g \times N}$ collects the rows from block $k$.
+By the linearity of the symplectic representation~\cite{Dehaene2003}, the row space of $z^{(k)}$ is the image of the row space of $z^{(1)}$ under the cumulative inter-block Clifford transformation.
+Specifically, let $D_k$ denote the combined Clifford between blocks 1 and $k$, with symplectic matrix $S_{D_k}$.
+Then $\mathrm{rowspace}(z^{(k)}) = L_k(\mathrm{rowspace}(z^{(1)}))$ where $L_k$ is the invertible $\mathbb{F}_2$-linear map on $\mathbb{F}_2^N$ determined by the $G$-block of $S_{D_k}$.
+The total rank is
+\begin{equation}
+\mathrm{rank}(z) = \dim\bigl(\textstyle\sum_{k=1}^r L_k(V_1)\bigr),
+\end{equation}
+where $V_1 = \mathrm{rowspace}(z^{(1)}) \subseteq \mathbb{F}_2^N$ has $\dim(V_1) = \mathrm{rank}(z^{(1)}) \le \min(g,N)$.
+Each subspace $L_k(V_1)$ has the same dimension as $V_1$ (since $L_k$ is invertible), but the sum has dimension at most $N$.
+When $g \ge N$, we typically have $\mathrm{rank}(z^{(1)}) = N$, so that $V_1 = \mathbb{F}_2^N$ and consequently $\mathrm{rank}(z) = N$ \emph{independently of $r$}; in this regime, every non-Clifford gate beyond the first $N$ contributes only to nullity.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure4.png}
+    \caption{Proposition~\ref{prop:repeated_block} verification. \textbf{(a)} Grover: GF(2) rank saturates at exactly $N$ from $r = 1$ iteration. \textbf{(b)} VQE: identical saturation behavior across all $N$. \textbf{(c)} The ratio $\mathrm{rank}/(g + (r{-}1)N)$ remains below $0.1$, confirming the bound is universally satisfied. The saturation at $\mathrm{rank} = N$ from the first repetition confirms that the single block already spans $\mathbb{F}_2^N$, and subsequent repetitions add zero independent rows.}
+    \label{fig:prop2}
+\end{figure}
+
+Figure~\ref{fig:prop2} validates this analysis numerically.
+For both Grover and VQE at $N = 4, 6, 8, 10, 12$, the GF(2) rank saturates at exactly $N$ from the first repetition ($r = 1$) and remains constant as $r$ increases.
+This confirms that within a single block, the $g > N$ non-Clifford gates already span the full $\mathbb{F}_2^N$ row space, and subsequent repetitions add zero independent rows.
+The ratio $\mathrm{rank}/[g + (r-1)N]$ (Fig.~\ref{fig:prop2}(c)) remains below $0.1$, showing that the tight bound $\mathrm{rank} \le N$ is substantially stronger than the naive row-counting bound $\mathrm{rank} \le g + (r-1)N$ for these circuits.
+
+\subsection{Z-Type Obstruction}
+\label{sec:z_type}
+
+The scaling classification shows \emph{that} structured circuits have high nullity, but does not explain \emph{why} specific non-Clifford gates contribute zero rows to the GF(2) rank.
+The following characterization, which is a direct consequence of Definition~\ref{def:gf2_matrix}, identifies the mechanism.
+
+\begin{observation}[Z-type obstruction]
+\label{prop:z_type}
+The $k$-th non-Clifford gate produces a zero row in $z$ (i.e., $z_{k,j} = 0$ for all $j$) if and only if the twisted Pauli $\bar{Z}^{[k]}$ is Z-type: $\bar{Z}^{[k]} \in \{I, Z\}^{\otimes N}$ (up to global phase).
+In the symplectic formulation, this is equivalent to
+\begin{equation}
+G^{(k)}_{q_k,:} = \mathbf{0},
+\end{equation}
+where $G^{(k)}$ is the $G$-block of the symplectic matrix of $C_k$.
+A Z-type twisted Pauli arises whenever the Clifford circuit $C_k$ preserves the Z-subalgebra on qubit $q_k$: $C_k^\dagger Z_{q_k} C_k \in \{I, Z\}^{\otimes N}$.
+\end{observation}
+
+\begin{proof}
+By Definition~\ref{def:gf2_matrix}, $z_{k,j} = 0$ for all $j$ if and only if every qubit of $\bar{Z}^{[k]}$ has Pauli type $I$ or $Z$, which is exactly the condition $\bar{Z}^{[k]} \in \{I,Z\}^{\otimes N}$.
+By the symplectic representation (Section~\ref{sec:tableau}), the $x$-bits of $C_k^\dagger Z_{q_k} C_k$ are given by row $q_k$ of the $G$-block of $S_{C_k}$.
+Hence all $x$-bits vanish if and only if $G^{(k)}_{q_k,:} = \mathbf{0}$.
+\end{proof}
+
+This observation explains why circuits built from diagonal gates are OFD-hostile.
+All diagonal gates, such as $Z$, $S$, $T$, $R_z(\theta)$, $CZ$, and controlled-$R_z$, commute with $Z$ on each qubit up to phase.
+In the symplectic formulation, a diagonal gate has $G = 0$~\cite{Dehaene2003}, meaning it cannot convert a Z-type Pauli to one with $X$ or $Y$ content.
+Only gates with a Hadamard component, including $H$ and CNOT, introduce nonzero entries to the $G$-block; in the Heisenberg picture, CNOT maps $Z_{\mathrm{tgt}}$ to $Z_{\mathrm{ctrl}} Z_{\mathrm{tgt}}$, thereby mixing the control's $Z$ into the target.
+
+In QFT, each controlled-$R_m$ gate decomposes via Eq.~\eqref{eq:cr_decomp} into CNOT and $R_z$ gates.
+CNOT gates introduce $X/Y$ content to the $G$-block, while diagonal $R_z$ gates do not.
+Within a single controlled-$R_m$ decomposition, the two CNOTs bracket the $R_z$ gates, creating a paired structure that constrains the $x$-bit content of the twisted Paulis (see Theorem~\ref{thm:qft_rank} for the precise analysis).
+
+\subsection{QFT Per-Rotation Rank Bound}
+
+The QFT's extreme nullity ratio admits a structural explanation.
+We first establish a per-rotation bound, then prove the exact rank identity.
+
+\begin{proposition}[Per-rotation rank contribution in QFT]
+\label{prop:qft_rotation}
+In the $N$-qubit QFT with each controlled-$R_m$ ($m \ge 2$) decomposed via Eq.~\eqref{eq:cr_decomp} using exact angles, each controlled rotation contributes exactly $3$ non-Clifford $R_z$ gates but at most $O(1)$ linearly independent rows to the GF(2) matrix $z$.
+Consequently,
+\begin{equation}
+\label{eq:qft_per_rotation}
+\mathrm{rank}(z_{\mathrm{QFT}}) \le c \cdot \frac{N(N-1)}{2}
+\end{equation}
+for a constant $c$ independent of $N$, while $t = 3N(N-1)/2$.\footnote{Each of the $N(N-1)/2$ controlled rotations contributes 3 non-Clifford $R_z$ gates via the decomposition in Eq.~\eqref{eq:cr_decomp}: two on the target qubit and one on the control qubit. For $N \ge 35$, the implementation's finite-precision Clifford angle test (tolerance $10^{-10}$) misclassifies rotations with $m \gtrsim 35$ as Clifford due to floating-point underflow, reducing the effective $t$ below $3N(N-1)/2$. The values in Table~\ref{tab:qft_rank} reflect the implementation's effective counts. The rank identity $\mathrm{rank} = N - 1$ holds regardless, since these additional gates cannot increase the rank beyond $N - 1$ (Theorem~\ref{thm:qft_rank}).}
+Since both the rank bound and $t$ are $O(N^2)$, Proposition~\ref{prop:qft_rotation} alone gives $\nu/t \ge 1 - c/3 \ge 1/3$.
+The stronger conclusion $\nu/t \to 1$ follows from the exact rank identity $\mathrm{rank} = N - 1 = O(N)$ established in Theorem~\ref{thm:qft_rank} below.
+\end{proposition}
+
+\begin{proof}
+Consider a single controlled-$R_m$ decomposition (Eq.~\eqref{eq:cr_decomp}) in the QFT with control qubit $c = j$ and target qubit $k = j + m - 1$.
+The decomposition produces three non-Clifford $R_z$ gates: $R_z(\theta/2)$ on target $k$, then $R_z(-\theta/2)$ on target $k$ (between the two $\mathrm{CNOT}(j,k)$ gates), then $R_z(\theta/2)$ on control $j$.
+
+The first gate $R_z(\theta/2)_k$ acts on the target qubit $k > j$, which has not yet received its Hadamard (Hadamards are applied in order $j = 1, 2, \ldots, N$).
+By Observation~\ref{prop:z_type}, this gate produces a Z-type twisted Pauli with all-zero $x$-bits, contributing a zero row to $z$.
+
+The second gate $R_z(-\theta/2)_k$ occurs between the two $\mathrm{CNOT}(j,k)$ gates.
+The first $\mathrm{CNOT}(j,k)$ adds column $j$ to column $k$ of the $G$-block, potentially modifying entries in column $k$.
+This gate reads row $k$ of the $G$-block and contributes at most one $x$-bit vector.
+
+The third gate $R_z(\theta/2)_j$ acts on the control qubit $j$, which has already received its Hadamard, so the $G$-block has $G[j,j] = 1$.
+After the second CNOT restores the $G$-block to its pre-pair configuration, the twisted Pauli has $x$-bits determined by row $j$ of $G$, and thus contributes at most one non-zero $x$-bit vector.
+
+The second and third gates produce $x$-bit vectors spanning a subspace of dimension at most 2 over $\mathbb{F}_2$.
+With $N(N-1)/2$ controlled rotations, the bound~\eqref{eq:qft_per_rotation} follows with the constant $c \le 2$.
+\end{proof}
+
+\subsection{Exact QFT Rank Identity}
+
+Proposition~\ref{prop:qft_rotation} shows that the QFT rank grows at most as $O(N^2)$, corresponding to the number of rotations rather than the total number of non-Clifford gates.
+However, the empirical rank grows much slower: it is exactly $N - 1$.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure5.png}
+    \caption{QFT GF(2) rank scaling (extended to $N = 256$). \textbf{(a)} Despite quadratic non-Clifford gate count $t \sim 3N(N-1)/2$ (orange squares; see footnote in Proposition~\ref{prop:qft_rotation} for finite-precision effects at large $N$), the GF(2) rank satisfies $\mathrm{rank} = N - 1$ exactly (green dashed line, zero residuals) for all $N$ tested. The power-law fit $0.77 \cdot N^{1.06}$ and log-corrected fit are shown for comparison; both deviate systematically. The shaded region between rank and $t(N)$ represents the nullity. \textbf{(b)} Residuals on log scale: the $N - 1$ model has zero residuals (green triangles), while competing models show systematic deviations.}
+    \label{fig:qft_scaling}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure5b.png}
+    \caption{Effective power-law exponent $\alpha_{\mathrm{eff}}$ between consecutive $N$ values, converging monotonically from $1.22$ at $N = 8$ to $1.006$ at $N = 256$. The convergence to $\alpha = 1$ (dashed green line) confirms the exact linear scaling $\mathrm{rank} = N - 1$.}
+    \label{fig:qft_exponent}
+\end{figure}
+
+\begin{theorem}[QFT GF(2) rank]
+\label{thm:qft_rank}
+For the $N$-qubit QFT with each controlled-$R_m$ ($m \ge 2$) decomposed via Eq.~\eqref{eq:cr_decomp} using exact angles $\theta = 2\pi/2^m$, the GF(2) matrix satisfies
+\begin{equation}
+\label{eq:qft_rank}
+\mathrm{rank}(z_{\mathrm{QFT}}) = N - 1.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The QFT circuit processes qubits sequentially: for each $j = 1, \ldots, N$, a Hadamard is applied to qubit $j$, followed by controlled-$R_m$ gates with control qubit $c = j$ and target qubit $k = j + m - 1$ for $m = 2, \ldots, N - j + 1$.
+Each controlled-$R_m$ contributes three non-Clifford $R_z$ gates via Eq.~\eqref{eq:cr_decomp}: two on target qubit $k$ and one on control qubit $j$.
+The final iteration $j = N$ applies only a Hadamard (no controlled rotations), producing no non-Clifford gates.
+
+We write $\tilde{P}_k = C_k^\dagger Z_{q_k} C_k$ for the twisted Pauli at the $k$-th non-Clifford gate on qubit $q_k$, and $x^{(k)} \in \mathbb{F}_2^N$ for its $x$-bit vector.
+
+\medskip
+\noindent\emph{Upper bound: $\mathrm{rank} \le N - 1$.}\quad
+We show $x^{(k)}_N = 0$ for every non-Clifford gate $k$, so all rows lie in the subspace $\{v \in \mathbb{F}_2^N : v_N = 0\}$.
+
+All non-Clifford gates occur during iterations $j = 1, \ldots, N - 1$ (iteration $j = N$ has no controlled rotations).
+Before the Hadamard on qubit $N$ at the start of iteration $j = N$, qubit $N$ has never been the target of a Hadamard or $S$ gate.
+It participates only through $\mathrm{CNOT}(j, N)$ gates (as target) within the controlled-$R_m$ decompositions where the target qubit is $N$ (i.e., controlled rotations from iteration $j$ with $k = N$), and through $R_z$ gates on qubit $N$ within those same decompositions.
+
+The CNOT update rule for the $G$-block (the $x$-bit sub-matrix of the stabilizer tableau) is: $\mathrm{CNOT}(c, t)$ adds column $c$ to column $t$, i.e., $G[\cdot, t] \leftarrow G[\cdot, t] \oplus G[\cdot, c]$, following the Aaronson--Gottesman convention~\cite{Aaronson2004}.
+The only other Clifford gate affecting the $G$-block is the Hadamard $H_q$, which swaps the $x$-bit and $z$-bit columns at position $q$; starting from $G = 0$, the Hadamard on qubit $q$ sets $G[\cdot, q]$ to the former $z$-bit column at position $q$ (which has $G[q, q] = 1$ from the initial $Z_q$ stabilizer, while $G[q', q] = 0$ for $q' \ne q$).
+
+We show $x^{(k)}_N = 0$ for every non-Clifford gate $k$, where $x^{(k)}_N = G^{(k)}[q_k, N]$ (row $q_k$, column $N$).
+
+The only operations that can set entries in column $N$ of $G$ are: (i) $H_N$, which swaps the $x$/$z$ columns at position $N$, and (ii) any $\mathrm{CNOT}(c, N)$ with target $N$, which adds column $c$ to column $N$.
+The Hadamard $H_N$ occurs only at iteration $j = N$, after all non-Clifford gates, so it cannot affect any twisted Pauli.
+The $\mathrm{CNOT}(j, N)$ gates (within controlled-$R_m$ decompositions targeting qubit $N$) do temporarily modify column $N$: each adds column $j$ to column $N$, setting $G[j, N] = 1$ if $G[j, j] = 1$ (which holds when qubit $j$ has received its Hadamard).
+However, these CNOTs come in pairs within each decomposition (Eq.~\eqref{eq:cr_decomp}), and the second CNOT restores column $N$ to its pre-pair state.
+The three non-Clifford $R_z$ gates within each decomposition see column $N$ as follows:
+
+\emph{Gate 1} ($R_z(\theta/2)$ on target $N$, before the CNOT pair): column $N$ has not been modified, so $G[N, N] = 0$ and $x_N = 0$.
+
+\emph{Gate 2} ($R_z(-\theta/2)$ on target $N$, between the paired CNOTs): the first $\mathrm{CNOT}(j, N)$ has added column $j$ to column $N$.
+This gate reads row $N$ of the $G$-block: $x^{(k)}_N = G[N, N]$.
+Since the column operation adds $G[N, j]$ to $G[N, N]$, and $G[N, j] = 0$ (qubit $N$ has not had its Hadamard, so row $N$ of $G$ is all zeros before the CNOT), $G[N, N]$ remains $0$, giving $x_N = 0$.
+
+\emph{Gate 3} ($R_z(\theta/2)$ on control $j$): this occurs after the second CNOT restores column $N$.
+This gate reads row $j$ of the $G$-block: $x^{(k)}_N = G[j, N] = 0$ (restored by the CNOT pair).
+
+For non-Clifford gates on qubits $q_k \ne N$ from decompositions \emph{not} targeting qubit $N$ (i.e., $\mathrm{CNOT}(j, k)$ with $k < N$): these CNOTs do not modify column $N$ at all, so $G[q_k, N]$ can only be nonzero if a prior unpaired CNOT targeting $N$ left a residue.
+Since all $\mathrm{CNOT}(j, N)$ gates occur in cancelling pairs and column $N$ is restored after each pair, no residue accumulates.
+
+Therefore $x^{(k)}_N = 0$ for all non-Clifford gates $k$, and $\mathrm{rank} \le N - 1$.
+
+\medskip
+\noindent\emph{Lower bound: $\mathrm{rank} \ge N - 1$.}\quad
+At the start of iteration $j$ ($1 \le j \le N - 1$), the Hadamard $H_j$ sets $G[j, j] = 1$ (and no other entry in row $j$ of $G$ is nonzero at this point, since prior CNOT pairs have restored the $G$-block after each controlled rotation).
+Consider the first controlled rotation in iteration $j$: the controlled-$R_2$ (controlled-$S$) with control $c = j$ and target $k = j + 1$.
+Its decomposition (Eq.~\eqref{eq:cr_decomp}) produces three non-Clifford gates.
+The \emph{third} of these is $R_z(\theta/2)$ acting on control qubit $j$. Since it occurs after the second $\mathrm{CNOT}(j, j{+}1)$ restores the $G$-block, it produces a twisted Pauli $C^\dagger Z_j C$ whose $x$-bit vector is $e_j$, the unit vector with a 1 only in position $j$.
+This holds because: (i) the paired $\mathrm{CNOT}(j, j{+}1)$ gates within the decomposition cancel their column modifications (the first adds column $j$ to column $j{+}1$, the second restores it), so after both CNOTs the $G$-block returns to its pre-pair state; (ii) the third $R_z$ gate acts on control qubit $j$ and reads row $j$ of the $G$-block, which has $G[j, j] = 1$ from $H_j$ and $G[j, j'] = 0$ for $j' \ne j$, yielding $x$-bit vector $e_j$.
+Note that the first two non-Clifford gates (both on target $k = j + 1$) produce all-zero $x$-bit rows: gate~1 sees row $k$ which is all zeros (qubit $k$ has not yet had its Hadamard), and gate~2 also sees row $k$ which remains all zeros (the $\mathrm{CNOT}(j,k)$ modifies column $k$ by adding column $j$, but this only changes $G[j, k]$, not $G[k, k]$, since $G[j, j] = 1$ is the only nonzero entry in column $j$).
+
+The vectors $e_1, e_2, \ldots, e_{N-1}$ are linearly independent over $\mathbb{F}_2$, so $\mathrm{rank} \ge N - 1$.
+Subsequent non-Clifford gates within and after iteration $j$ cannot eliminate these pivot rows, as each $e_j$ occupies a distinct column.
+Numerical verification confirms this structure for all $N$ from 4 to 256: the RREF of $z_{\mathrm{QFT}}$ has pivots at columns $1, 2, \ldots, N-1$ with no pivot at column $N$ (Table~\ref{tab:qft_rank}).
+\end{proof}
+
+\begin{table}[t]
+\centering
+\small
+\caption{QFT GF(2) rank confirming $\mathrm{rank} = N - 1$ for all $N$ tested. The $t$ column reports the effective non-Clifford gate count as computed by the implementation; for $N \ge 35$, this is slightly below $3N(N{-}1)/2$ because the implementation's Clifford-angle test absorbs rotations $R_m$ with $m \ge 35$ (see Proposition~\ref{prop:qft_rotation} footnote). The effective exponent $\alpha_{\mathrm{eff}}$ between consecutive $N$ values converges to $1$.}
+\label{tab:qft_rank}
+\begin{tabular}{@{}rrrrrc@{}}
+\toprule
+$N$ & $t$ & rank & $N{-}1$ & $\nu/t$ & $\alpha_{\mathrm{eff}}$ \\
+\midrule
+4 & 18 & 3 & 3 & 0.833 & --- \\
+8 & 84 & 7 & 7 & 0.917 & 1.22 \\
+16 & 360 & 15 & 15 & 0.958 & 1.10 \\
+32 & 1{,}488 & 31 & 31 & 0.979 & 1.05 \\
+64 & 4{,}656 & 63 & 63 & 0.986 & 1.02 \\
+128 & 17{,}424 & 127 & 127 & 0.993 & 1.01 \\
+256 & 79{,}824 & 255 & 255 & 0.997 & 1.006 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Theorem~\ref{thm:qft_rank} is the first exact GF(2) rank result for a specific structured circuit family.
+Liu and Clark~\cite{Liu2024} established that random Clifford+T circuits with $t = N$ have $\mathrm{rank} \approx N - 0.85$; our result shows that the QFT, despite having $t = \Theta(N^2)$ non-Clifford gates, achieves only rank $N - 1$---just one dimension short of the maximum possible rank.
+The single missing dimension corresponds to qubit $N$ (the last qubit processed), whose Hadamard gate occurs after all non-Clifford gates, preventing it from contributing $X/Y$ content to any twisted Pauli.
+
+\emph{Connection to magic depth.}
+Zhang and Zhang~\cite{Zhang2025} established that computational complexity is governed by magic depth, the number of non-Clifford layers. In particular, they identified a sharp transition: T-depth 1 circuits are polynomial-time simulable, whereas T-depth 2 circuits are GapP-complete.
+QFT has magic depth $\Theta(N)$ (non-Clifford gates from $N - 1$ Hadamard-interleaved stages), placing it firmly in the computationally hard regime.
+Our GF(2) analysis provides a finer characterization: within the hard regime, the QFT has rank exactly $N - 1$, giving nullity $\nu = t - N + 1 = \Theta(N^2)$ and a bond dimension bound $\chi \le 2^{\Theta(N^2)}$.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure6.png}
+    \caption{QFT incremental rank growth per controlled rotation, shown as cumulative GF(2) rank versus fractional gate position. At $N = 8$ (84 non-Clifford gates), $N = 16$ (360 non-Clifford gates), and $N = 32$ (1{,}488 non-Clifford gates), each controlled rotation contributes a staircase step of $O(1)$ rank despite containing 3 non-Clifford gates. Later rotations contribute diminishing rank increments as the row space approaches saturation at $N - 1$.}
+    \label{fig:qft_staircase}
+\end{figure}
+
+\subsection{Intermediate Circuits: Backbone Sampling}
+\label{sec:backbone}
+
+The preceding subsections provide analytical explanations for Class~I (rank saturation from random sampling) and Class~II (repeated-block structure, Z-type obstruction).
+We now address the intermediate class.
+
+\begin{remark}[Backbone sampling architecture]
+\label{rem:backbone}
+All Class~III families except QAOA share a common structure: a deterministic Clifford backbone (Hadamard and CNOT layers) followed by $t = N$ non-Clifford gates placed on qubits drawn from $\{1, \ldots, N\}$.
+The backbone's $G$-block, which is the submatrix of the stabilizer tableau recording the $X$-component transformation, determines which qubits produce nonzero $\mathrm{GF}(2)$ rows when targeted by a T-gate.
+Specifically, a T-gate on qubit $q$ produces a GF(2) row equal to row $q$ of the backbone's $G$-block at the time of application.
+This contrasts with Class~I (random backbone yielding near-full rank) and Class~II (deterministic backbone with $t \gg N$ or diagonal structure yielding near-zero rank).
+\end{remark}
+
+\begin{proposition}[Backbone rank bound]
+\label{prop:backbone_bound}
+Let a circuit consist of a Clifford backbone with $G$-block $G_{\mathrm{bb}} \in \mathbb{F}_2^{N \times N}$, followed by $t$ non-Clifford gates with no intervening Clifford operations.
+Then $\mathrm{rank}(z) \le \mathrm{rank}(G_{\mathrm{bb}})$.
+\end{proposition}
+
+\begin{proof}
+Each non-Clifford gate on qubit $q$ produces a GF(2) row equal to row $q$ of $G_{\mathrm{bb}}$.
+Since all rows of $z$ are drawn from the rows of $G_{\mathrm{bb}}$, the row space of $z$ is contained in the row space of $G_{\mathrm{bb}}$, giving $\mathrm{rank}(z) \le \mathrm{rank}(G_{\mathrm{bb}})$.
+\end{proof}
+
+\begin{corollary}[Birthday-effect nullity]
+\label{cor:birthday}
+If $G_{\mathrm{bb}}$ has $N$ linearly independent rows and $t = N$ non-Clifford gates target qubits chosen uniformly and independently from $\{1, \ldots, N\}$, then the expected number of distinct qubits targeted is $N(1 - (1 - 1/N)^N) \to N(1 - 1/e)$ as $N \to \infty$, giving $\mathrm{rank}(z) \to N(1 - 1/e)$ and $\nu/t \to 1/e \approx 0.368$.
+\end{corollary}
+
+\begin{proof}
+This is the classical birthday/occupancy result.
+The probability that a given qubit is untargeted is $(1 - 1/N)^N \to e^{-1}$. It follows that the expected number of distinct targeted qubits is $N(1 - 1/e)$; because the targeted rows of $G_{\mathrm{bb}}$ are independent, this also equals the expected rank.
+The nullity ratio is $\nu/t = (t - \mathrm{rank})/t \to 1 - (1 - 1/e) = 1/e$.
+\end{proof}
+
+\emph{Empirical verification.}
+The prediction $\nu/t \to 1/e$ is confirmed by the data at $N = 64$:
+cluster states achieve $\nu/t = 0.352$ (within $4.4\%$ of $1/e$), graph states $0.352$ (within $4.4\%$), and Bernstein--Vazirani $0.398$ (within $8.2\%$, with slower convergence likely due to the structure of its oracle); the convergence toward $1/e \approx 0.368$ is monotonic with increasing $N$.
+Bell states ($\nu/t \approx 0.55$) and Simon's algorithm ($\nu/t \approx 0.61$) exhibit partial backbones, since Hadamard gates act on only $N/2$ qubits. Consequently, the effective backbone rank satisfies $r_{\mathrm{eff}} < N$, leading to higher nullity ratios consistent with a reduced sampling pool.
+GHZ states have backbone rank $r_G = 1$ (only the first qubit receives a Hadamard), so $\mathrm{rank}(z) = 1$ for all $N$ tested ($N = 4$ to $64$, 48 data points), giving $\nu/t = (N - 1)/N \to 1$.
+This places GHZ at the boundary of Class~II despite having only $t = N$ non-Clifford gates.
+
+\begin{remark}[QAOA structure]
+\label{rem:qaoa}
+QAOA does not fit the backbone sampling model but has a clean structural explanation.
+With angles $\gamma = \pi/4$, $\beta = \pi/8$ (following Farhi et al.~\cite{farhi2014quantum}), the cost-layer rotations $R_z(2\gamma) = R_z(\pi/2) = S$ are Clifford, while the $N$ mixer rotations $R_x(2\beta) = R_x(\pi/4)$ are non-Clifford.
+The GF(2) analysis processes all $t = 5N/2$ rotation gates (including the $3N/2$ Clifford cost-layer gates, which contribute zero-rank rows), and the rank saturates at the qubit count: $\mathrm{rank}(z) \approx N$.
+Since $t = 5N/2$, the nullity ratio converges to $\nu/t = 1 - N/(5N/2) = 3/5 = 0.6$, consistent across all tested system sizes ($N = 4$ to $64$) with negligible variance from the random 3-regular graph topology.
+An implementation that absorbs Clifford-angle rotations into the tableau would reduce the effective gate count to $t = N$; we process all rotation gates uniformly for consistency across families.
+This contrasts with backbone sampling families where the birthday effect governs the limiting ratio.
+\end{remark}
+
+\begin{remark}[Caveats]
+\label{rem:caveats}
+Proposition~\ref{prop:backbone_bound} applies strictly to circuits where all non-Clifford gates follow the Clifford backbone without intervening Clifford operations.
+In practice, OFD frame updates modify the stabilizer tableau after each disentangling step, and some circuits (e.g., Deutsch--Jozsa) interleave Hadamard gates between T-gates, violating the static backbone assumption.
+The birthday-effect prediction (Corollary~\ref{cor:birthday}) is therefore a heuristic for circuits with intervening Cliffords, though it remains empirically accurate for the families tested.
+\end{remark}
+
+\begin{conjecture}[Class~III limiting nullity]
+\label{conj:class3}
+For backbone sampling circuits with $N$ linearly independent productive qubits and $t = N$ uniformly random non-Clifford gate placements, $\nu/t \to 1/e$.
+For partial backbones with $r_{\mathrm{eff}} < N$ productive qubits, the limiting nullity ratio exceeds $1/e$, with the exact value determined by the backbone structure.
+\end{conjecture}
+
+%% ============================================================
+\section{Practical GF(2)-Guided Improvements}
+\label{sec:practical}
+%% ============================================================
+
+The GF(2) analysis naturally suggests practical improvements to CAMPS simulation.
+Since the GF(2) matrix is cheap to compute, it serves as a preprocessing step.
+
+\subsection{Pre-Screening of OFD Attempts}
+
+In standard CAMPS, each non-Clifford gate triggers an OFD attempt: the algorithm checks whether a suitable free qubit exists, constructs the disentangler if possible, and falls back to OBD otherwise.
+For OFD-hostile circuits, the vast majority of these attempts fail, wasting the computational cost of the OFD check before the (still necessary) OBD invocation.
+
+GF(2) pre-screening eliminates this waste.
+By computing the row echelon form of $z$ before simulation, we identify which non-Clifford gates are guaranteed to succeed with OFD (pivot rows) and which cannot succeed under the RREF ordering (null-space rows).
+During simulation, only pivot-row gates invoke OFD; null-space gates proceed directly to OBD (or naive absorption), skipping the futile OFD check entirely.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure9.png}
+    \caption{Fraction of OFD attempts eliminated by GF(2) pre-screening. For OFD-hostile circuits (VQE, Grover, QFT), pre-screening skips 95--99\% of futile OFD checks. Even OFD-friendly random circuits benefit modestly (12--18\%), since pre-screening identifies the small number of null-space gates that would fail OFD regardless.}
+    \label{fig:prescreening}
+\end{figure}
+
+Figure~\ref{fig:prescreening} quantifies the savings.
+For VQE, pre-screening eliminates 99\% of OFD attempts; for Grover, 98\%; for QFT, 95\%.
+Even for OFD-friendly random circuits, pre-screening provides a 12--18\% reduction.
+The GHZ family sees 83\% elimination, consistent with its 23\% empirical OFD success rate (Table~\ref{tab:ofd_rates} in Section~\ref{sec:validation}).
+The computational cost of pre-screening is negligible compared to CAMPS simulation: computing $z$ and its row echelon form takes milliseconds, versus hours for the full simulation.
+
+\subsection{Optimal Qubit Assignment}
+
+Beyond pre-screening, the GF(2) analysis informs the choice of \emph{which free qubit} to use as the OFD control for each non-Clifford gate.
+Standard greedy OFD selects the first available free qubit with a nonzero $x$-bit; however, this can consume a qubit needed by a later gate, reducing the total number of OFD successes below $\mathrm{rank}(z)$.
+Theorem~\ref{thm:bond_dim} guarantees that an assignment achieving $m \ge \mathrm{rank}(z)$ exists (via the RREF pivot columns), but this optimal assignment requires processing gates in the RREF-determined order, which may differ from circuit order.
+Since non-Clifford gates must be processed in circuit order (each twisted Pauli depends on the cumulative Clifford state, including prior OFD frame modifications), the RREF assignment is not directly implementable.
+In practice, greedy circuit-order OFD achieves the optimal bound $m \ge \mathrm{rank}(z)$ in 96.7\% of tested circuits, with a rank--$m$ deficit of at most 1--2 in the remaining cases (Section~\ref{sec:bound_tightness}).
+
+%% ============================================================
+\section{Small-Scale Empirical Validation}
+\label{sec:validation}
+%% ============================================================
+
+We validate the GF(2) predictions against full CAMPS simulations on 936 circuits at $N = 4$ to $16$ qubits, providing ground truth for the theoretical framework.
+
+\subsection{Implementation}
+
+We implement CAMPS in Julia using QuantumClifford.jl~\cite{Krastanov2022} for stabilizer tableau operations and ITensorMPS.jl~\cite{Fishman2022} for MPS operations.
+We employ a hybrid disentangling strategy: for each non-Clifford gate, OFD is attempted first following Liu and Clark's criterion~\cite{Liu2024}; on failure, we fall back to OBD following Qian \emph{et al.}~\cite{Qian2024}, searching over all 720 equivalence classes of two-qubit Clifford gates (up to phases) to minimize the second R\'enyi entropy, using their efficient $O(\chi^3 + |\mathrm{Cl}_2|)$ evaluation method.
+This hybrid OFD$\to$OBD pipeline is our implementation choice; Liu and Clark's original algorithm applies the gate directly to the MPS when OFD fails, accepting the bond dimension increase.
+The implementation spans approximately 9{,}000 lines of Julia code.
+
+For each circuit, we record the OFD success/failure at every non-Clifford gate, wall-clock simulation time, final MPS bond dimension, and GF(2) rank computed independently.
+
+\subsection{GF(2) Prediction Accuracy}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Summary statistics across 14 circuit families at $N = 4$--$16$ qubits.
+OFD\% is the fraction of non-Clifford gates successfully disentangled via OFD; Rank/T is the GF(2)-predicted fraction; the Pearson correlation across all 904 individual circuits (excluding pure-Clifford) is $r = 0.95$.}
+\label{tab:ofd_rates}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Family & $t$ & Rank & $\nu$ & OFD\% & $\chi$ \\
+\midrule
+Random (A2A) & 12 & 9.6 & 2.4 & 86 & 38.0 \\
+Random (Brick) & 12 & 9.4 & 2.6 & 82 & 38.0 \\
+Bernstein--Vaz. & 12 & 7.3 & 4.7 & 68 & 2.0 \\
+Graph State & 12 & 7.4 & 4.6 & 66 & 2.3 \\
+Cluster State & 12 & 7.2 & 4.8 & 65 & 2.1 \\
+Bell State & 12 & 5.1 & 6.9 & 56 & 2.4 \\
+Deutsch--Jozsa & 12 & 5.8 & 6.8 & 51 & 1.9 \\
+Simon's & 12 & 5.1 & 6.9 & 49 & 2.6 \\
+Surface Code & 9 & 2.1 & 7.3 & 43 & 1.5 \\
+QAOA & 30 & 11.6 & 18.4 & 39 & 99.0 \\
+GHZ & 12 & 1.0 & 11.0 & 23 & 1.8 \\
+QFT & 44 & 5.0 & 38.7 & 12 & 1.0 \\
+Grover & 98 & 4.0 & 94.0 & 2 & 4.0 \\
+VQE & 598 & 5.0 & 593.0 & 1 & 6.0 \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+
+\footnotesize{Values are averages over circuits with $t > 0$ (excluding pure-Clifford instances) from the 936-circuit benchmark. OFD\% $= \overline{m_i/t_i}$, the per-circuit fraction of non-Clifford gates disentangled by OFD, averaged over the family. Phase~1 families (Random through GHZ) use $N = 8, 12, 16$ with $t = 12$ non-Clifford gates each; Deutsch--Jozsa generates some pure-Clifford circuits (32 of 72) that are excluded. Phase~2 families span varying qubit counts and $t$-counts. $\chi$ = final bond dimension from full CAMPS simulation (OFD + OBD). For QFT, the exact-angle decomposition (Eq.~\eqref{eq:cr_decomp}) at $N = 4$--$8$ yields 3 non-Clifford $R_z$ gates per controlled-$R_k$; the GF(2) rank is exactly $N - 1$ (Theorem~\ref{thm:qft_rank}), and the hybrid OFD+OBD strategy achieves $\chi = 1$ at all tested sizes, confirming that the Clifford frame captures QFT's entanglement structure exactly. QAOA uses fixed angles $\gamma = \pi/4$, $\beta = \pi/8$ at $N = 8, 12, 16$; all $t = 5N/2$ rotation gates (including $3N/2$ Clifford-angle cost-layer $R_z(\pi/2)$) are processed uniformly, yielding $t = 20, 30, 40$ per size (Remark~\ref{rem:qaoa}).
+Grover data is from $N = 4$ only. The bound $\chi \le 2^\nu$ (Theorem~\ref{thm:bond_dim}) applies per-circuit, not to averaged quantities.}
+\end{table}
+
+Table~\ref{tab:ofd_rates} summarizes the empirical results.
+The GF(2) rank ratio $\mathrm{rank}/t$ closely tracks the empirical fraction of non-Clifford gates disentangled via OFD across all families, from 86\% for random all-to-all circuits down to 1\% for VQE.
+The Pearson correlation between these quantities, computed at the individual circuit level across all 904 non-trivial circuits, is $r = 0.95$, confirming that the GF(2) matrix provides a precise predictor of OFD behavior.
+At the per-family level (14 families, averaging over system sizes), the correlation is $r = 0.98$.
+For QFT specifically, the GF(2) rank is exactly $N - 1$ at every system size tested (Theorem~\ref{thm:qft_rank}), and the hybrid OFD+OBD benchmark achieves $\chi = 1$ for all 72 QFT circuits ($N = 4$--$8$), confirming that the Clifford frame perfectly captures QFT's entanglement.
+In the hybrid simulation, the exact-angle decomposition yields 3 non-Clifford rotation gates per controlled-$R_k$, but only a fraction trigger OFD attempts (the rest act on already-magic qubits within the MPS); the rank identity nevertheless provides the exact structural characterization of QFT's Class~II membership.
+
+\subsection{Bond Dimension Bound Validation}
+\label{sec:bound_tightness}
+
+Figure~\ref{fig:bound_validation}(a) plots the final CAMPS bond dimension against GF(2) nullity for all 936 circuits.
+Under the hybrid OFD+OBD strategy, all circuits satisfy $\chi \le 2^\nu$: OBD fallback keeps the bond dimension well below the theoretical ceiling.
+However, the bound's tightness varies significantly across families (Fig.~\ref{fig:bound_validation}(b)).
+Random circuits exhibit tightness ratios of $0.6$--$0.8$, meaning the bound is within a small constant factor; these circuits actually approach the worst case because OFD does not optimize the disentangler.
+
+To validate the bound under pure OFD (no OBD fallback), we run 330 additional simulations at $N = 4$--$8$ across all 14 families.
+The structural bound $\chi \le 2^{t-m}$ (Theorem~\ref{thm:bond_dim}, Claim~2), where $m$ is the number of greedy OFD successes, holds in 100\% of cases.
+The stronger optimal bound $\chi \le 2^\nu$ holds in 96.7\% of cases; the remaining 3.3\% are circuits where greedy circuit-order OFD achieves $m < \mathrm{rank}(z)$ due to suboptimal qubit assignment (rank--$m$ deficit of 1--2, concentrated in random and QAOA circuits).
+Theorem~\ref{thm:bond_dim} guarantees that an ordering achieving $m \ge \mathrm{rank}(z)$ \emph{exists} (Claim~1); greedy processing in circuit order does not always find it, but the structural bound $\chi \le 2^{t-m}$ holds for any ordering.
+
+This looseness at small $N$ is a \emph{finite-size effect} rather than a limitation of the bound.
+At small system sizes ($N = 4$--$16$), all circuits are classically simulable regardless of null space structure; bond dimensions remain manageable because the Hilbert space itself is small and OBD can efficiently explore the space of two-qubit Clifford disentanglers.
+The bound's value is \emph{predictive}: it identifies which circuits will become exponentially expensive as $N$ grows.
+At $N = 100$, a circuit with $\nu = 50$ has a bond dimension ceiling of $2^{50} \approx 10^{15}$. In contrast, when $\nu = 2$, the circuit remains trivially simulable, independent of OBD's ability to identify good disentanglers at small scale.
+Moreover, even when OBD successfully keeps $\chi$ low at large $N$, the nullity directly controls the \emph{computational time}: each of the $\nu$ null-space non-Clifford gates requires OBD, so the total simulation time scales as $O(\nu \cdot t_{\mathrm{OBD}})$.
+For QFT at $N = 32$ with $\nu/t = 0.98$ (Fig.~\ref{fig:qft_staircase}), nearly every non-Clifford gate triggers OBD. Consequently, the simulation is $10^4$--$10^5$ times slower than for a circuit of equal gate count in which OFD succeeds throughout, representing a computational barrier independent of the attainable bond dimension.
+The small-$N$ benchmarks validate the \emph{correctness} of the bound; the scaling classification (Section~\ref{sec:classification}) establishes its \emph{relevance} at scale.
+
+\subsection{Position-Dependent OFD Success}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure7.png}
+    \caption{OFD success rate as a function of non-Clifford gate position within the circuit (normalized to $[0,1]$). Random circuits maintain high success throughout, while structured algorithms show position-dependent failure patterns. The declining success at later positions for random circuits reflects the gradual consumption of free qubits as the GF(2) row space fills.}
+    \label{fig:ofd_position}
+\end{figure}
+
+Figure~\ref{fig:ofd_position} reveals position-dependent structure in OFD success.
+Random circuits exhibit approximately $80$--$100\%$ success in early positions. The success rate declines toward the end of the circuit as free qubits are exhausted, consistent with the $\mathrm{GF}(2)$ row space approaching full rank at $\mathrm{rank} \approx N$.
+Structured algorithms exhibit rapid initial decline: QFT, VQE, and Grover drop below 20\% success within the first 20\% of non-Clifford gates.
+This reflects the fast saturation of rank: as confirmed by Proposition~\ref{prop:repeated_block}, the GF(2) rank reaches $N$ within the first block of non-Clifford gates, leaving all subsequent gates in the null space.
+
+\subsection{Random Circuit Rank Saturation}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figure8.png}
+    \caption{Random Clifford+T rank saturation: GF(2) rank versus T-gate count for $N = 8$, $16$, and $32$.
+    The rank increases linearly until $t \approx N$, then saturates sharply at $\mathrm{rank} = N$. This confirms Liu and Clark's result~\cite{Liu2024} and provides the empirical foundation for Class~I behavior: random circuits with $t = N$ achieve near-full rank with nullity $\approx 0.85$.}
+    \label{fig:rank_saturation}
+\end{figure}
+
+Figure~\ref{fig:rank_saturation} shows the GF(2) rank as a function of T-gate count for random Clifford+T circuits at $N = 8$, $16$, and $32$.
+The rank increases linearly for $t < N$, with each new T-gate adding approximately one independent row, then saturates sharply at $\mathrm{rank} = N$.
+This saturation confirms Liu and Clark's analytical result~\cite{Liu2024} and the random matrix theory prediction: a random $t \times N$ binary matrix over $\mathbb{F}_2$ has expected rank $\min(t, N) - O(1)$, with the $O(1)$ correction being $\approx 0.85$ for square matrices.
+The sharp saturation also validates our scaling classification: Class~I circuits have $\nu/t \to 0$ precisely because $\mathrm{rank}\approx N$ while $t = N$, giving $\nu \approx 0.85 = O(1)$.
+
+\subsection{The Bond Dimension Paradox and Time-Space Decoupling}
+
+Table~\ref{tab:ofd_rates} reveals a counterintuitive pattern: random circuits with high OFD success accumulate large bond dimensions ($\chi \approx 38$), while most structured algorithms maintain low bond dimensions ($\chi \le 6$), with the exception of QAOA ($\chi \approx 99$) whose low OFD rate ($39\%$) leaves the majority of rotation gates to the OBD fallback (see Remark~\ref{rem:qaoa} for the role of Clifford-angle rotations).
+This apparent paradox resolves as follows.
+
+The bound $\chi \le 2^\nu$ (Theorem~\ref{thm:bond_dim}) applies to pure OFD processing, where each failed disentangling doubles the bond dimension.
+Our simulations employ OBD fallback (Section~\ref{sec:validation}), which successfully controls bond dimension for structured circuits at $N \le 16$: OBD searches over 720 two-qubit Clifford gate classes to minimize the second R\'enyi entropy at each bond, actively reducing entanglement at every step.
+For structured algorithms with regular entanglement patterns, OBD's optimization is highly effective, yielding near-optimal disentanglers that keep $\chi$ far below the $2^\nu$ ceiling.
+Whether OBD maintains this effectiveness at larger $N$ remains an open question; the GF(2) nullity provides a worst-case bound independent of OBD performance.
+
+The practical consequence is that high GF(2) nullity incurs a \emph{time cost} rather than a representational cost.
+CAMPS simulations of structured algorithms remain compact (low $\chi$) but slow, as each of the $\nu$ OBD-requiring non-Clifford gates incurs the full OBD cost.
+The $\mathrm{GF}(2)$ nullity thus predicts the \emph{time complexity} of CAMPS simulation, while the bond dimension controls the \emph{space complexity}, and these two costs are decoupled for structured circuits.
+This motivates our GF(2)-guided improvements (Section~\ref{sec:practical}): knowing in advance which gates will fail OFD allows the simulation to proceed directly to OBD, saving the overhead of futile OFD attempts.
+
+
+%% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+%% ============================================================
+
+\textbf{Implications for CAMPS practitioners.}
+Our scaling classification provides an immediate practical tool: before committing to an expensive CAMPS simulation, compute the GF(2) matrix and check the nullity ratio.
+Class~I circuits will be fast; Class~II circuits will be slow regardless of implementation quality.
+For Class~III circuits, the backbone sampling analysis (Section~\ref{sec:backbone}) provides quantitative guidance: if the Clifford backbone has full rank and $t = N$ T-gates are placed uniformly, the expected nullity ratio is $1/e \approx 0.368$, meaning roughly $63\%$ of T-gates will be OFD-amenable.
+Circuits with partial backbones (e.g., Bell, Simon's) have higher nullity ratios, and QAOA requires separate analysis due to its qualitatively different structure.
+
+\textbf{Connection to quantum advantage.}
+The observation that structured quantum algorithms are precisely those with high GF(2) nullity has implications for quantum advantage claims.
+Liu and Clark's result that random Clifford+T circuits with $t \le N$ are CAMPS-simulable~\cite{Liu2024} does \emph{not} extend to the structured circuits most relevant to practical quantum computing.
+However, high nullity does not imply computational hardness. Rather, it indicates that \emph{OFD-based} simulation is slow, although alternative approaches such as OBD, STN~\cite{MasotLlima2024}, or Pauli propagation~\cite{PauliProp2019} may remain effective.
+The bond dimension paradox demonstrates this directly: structured algorithms maintain low $\chi$ despite OFD failure.
+
+\textbf{Relationship to nonstabilizerness measures.}
+Frau \emph{et al.}~\cite{Frau2025} introduced a classification of many-body ground states based on how effectively local Clifford sweeps reduce entanglement entropy: fully locally-Clifford-disentanglable (fLCD) states can be perfectly disentangled, locally-Clifford-disentanglable (LCD) states exhibit entanglement reduction that improves with system size, and non-locally-Clifford-disentanglable (nLCD) states show only constant entanglement reduction.
+Our three-class circuit taxonomy exhibits a suggestive parallel: Class~I circuits (where OFD succeeds at nearly all non-Clifford gates) loosely echo fLCD, Class~II circuits (where OFD fails universally) echo nLCD, and Class~III echoes LCD.
+However, the two analogies apply at different levels of description. The classification of Frau \emph{et al.} concerns Clifford disentangling of quantum \emph{states}, as characterized by the mutual stabilizer R\'{e}nyi entropy. In contrast, our framework analyzes the $\mathrm{GF}(2)$ rank structure of \emph{circuits}.
+Whether a formal connection exists between these two frameworks remains an open question.
+
+\textbf{Beyond CAMPS.}
+The GF(2) matrix encodes structural information about twisted Pauli strings that may be useful beyond the CAMPS framework.
+In stabilizer tensor networks~\cite{MasotLlima2024}, each non-Clifford gate can increase the bond dimension $\chi$ of the tensor network of stabilizer amplitudes; we conjecture that the GF(2) null space structure may predict which non-Clifford gates cause this increase, though this connection has not been formally established.
+Similarly, Pauli propagation methods~\cite{PauliProp2019} study Heisenberg-picture evolution, where non-Clifford gates generate branching of Pauli strings. Because the $\mathrm{GF}(2)$ row structure encodes the $X/Y$ content of the twisted Paulis governing each gate's interaction with the Clifford frame, we expect it to influence which gates contribute to branching, although this remains an open question.
+Establishing formal connections between our GF(2) classification and the simulation costs of these alternative methods is an interesting direction for future work.
+
+\textbf{Limitations.}
+Our scaling analysis extends to $N = 64$ for most families, with QFT and VQE reaching $N = 256$.
+While the GF(2) computation itself scales beyond $N = 256$, circuit generation for some families (e.g., Grover with many iterations) becomes the bottleneck.
+The small-scale validation is limited to $N \le 16$ by CAMPS simulation cost.
+Our formal results (Theorem~\ref{thm:bond_dim}, Propositions~\ref{prop:repeated_block}--\ref{prop:qft_rotation}, Theorem~\ref{thm:qft_rank}, Proposition~\ref{prop:backbone_bound}) are rigorous, with the lower bound of Theorem~\ref{thm:qft_rank} additionally supported by numerical verification at all $N$ from 4 to 256.
+The backbone rank bound (Proposition~\ref{prop:backbone_bound}) applies to circuits with a static Clifford backbone; the birthday-effect corollary (Corollary~\ref{cor:birthday}) is verified empirically but relies on the uniform sampling assumption.
+We benchmark only OFD/OBD disentangling strategies; the recently developed methods of Paviglianiti \emph{et al.}~\cite{Paviglianiti2024} and adaptive truncation strategies may modify the practical landscape.
+The exact rank identity $\mathrm{rank} = N - 1$ (Theorem~\ref{thm:qft_rank}) is established for the standard controlled-rotation decomposition (Eq.~\eqref{eq:cr_decomp}) with exact angles; alternative decompositions (e.g., via gate synthesis into T-gates at finite precision $\varepsilon$) may yield different rank values, though the scaling class is unaffected since rank $= \Theta(N)$ in either case.
+
+%% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+%% ============================================================
+
+We have presented a GF(2) null space scaling classification of 14 quantum circuit families, revealing three distinct classes of CAMPS simulability: OFD-friendly (random circuits with $t = N$, $\nu/t \to 0$), OFD-hostile (QFT, VQE, Grover, $\nu/t \to 1$), and intermediate, whose backbone sampling structure predicts limiting nullity ratios via the classical birthday effect.
+The classification is underpinned by formal results: a bond dimension bound $\chi \le 2^{\nu}$ (Theorem~\ref{thm:bond_dim}), a repeated-block nullity result explaining Class~II membership (Proposition~\ref{prop:repeated_block}), a Z-type obstruction characterization (Observation~\ref{prop:z_type}), a per-rotation rank bound (Proposition~\ref{prop:qft_rotation}), an exact rank identity $\mathrm{rank}(z_{\mathrm{QFT}}) = N - 1$ (Theorem~\ref{thm:qft_rank}) proved via the sequential structure of the QFT circuit, and a backbone rank bound for intermediate circuits (Proposition~\ref{prop:backbone_bound}) with a birthday-effect corollary predicting $\nu/t \to 1/e$ (Corollary~\ref{cor:birthday}).
+
+Our key empirical finding is that GF(2) rank predicts CAMPS OFD success with Pearson $r = 0.95$ at the individual circuit level ($r = 0.98$ per-family), validated across 904 circuits and 14 families.
+The structural bond dimension bound $\chi \le 2^{t-m}$ holds universally under pure OFD, with greedy circuit-order processing achieving the optimal bound $\chi \le 2^\nu$ in 96.7\% of tested circuits.
+The GF(2) analysis runs in seconds even at $N = 256$, providing a fast and reliable predictor of CAMPS simulability \emph{before} expensive MPS simulation.
+Practically, GF(2) pre-screening eliminates 95--99\% of futile OFD attempts for structured algorithms.
+
+Looking forward, several directions remain open.
+Our proof of the rank identity $\mathrm{rank}(z_{\mathrm{QFT}}) = N - 1$ is constructive: the lower bound identifies the specific gate (the control $R_z$ after the CNOT pair) in each iteration that produces $e_j$, with the mechanism fully determined by the CNOT column-update algebra.
+Extending this structural analysis to additional circuit families would further develop the classification framework. Such work would require identifying the gate-level mechanisms that generate or inhibit independent $\mathrm{GF}(2)$ rows.
+Extending the classification to Hamiltonian simulation circuits (Trotter, QDRIFT) would connect to the dominant use case of CAMPS for condensed matter physics~\cite{Qian2024,MelloTDVP2025}.
+The GF(2) null space structure may also inform the development of new disentangling strategies specifically targeting Class~II circuits, potentially enabling efficient CAMPS simulation of structured quantum algorithms.
+
+\section*{Code and Data Availability}
+
+CAMPS.jl provides the first open-source implementation of the CAMPS framework. The associated repository contains the $\mathrm{GF}(2)$ analysis code, benchmarking scripts for all 14 circuit families, and data reproducing all figures, available at \url{https://github.com/riteshbhirud/CAMPS-OFD}.
+
+\section*{Acknowledgments}
+Acknowledgments....
+
+
+%% ============================================================
+%% BIBLIOGRAPHY
+%% ============================================================
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+
+\bibitem{Gottesman1998}
+D.~Gottesman,
+The Heisenberg representation of quantum computers,
+in \textit{Proc.\ XXII International Colloquium on Group Theoretical Methods in Physics},
+pp.~32--43 (1998).
+arXiv:quant-ph/9807006.
+
+\bibitem{Aaronson2004}
+S.~Aaronson and D.~Gottesman,
+Improved simulation of stabilizer circuits,
+\textit{Phys.\ Rev.\ A} \textbf{70}, 052328 (2004).
+
+\bibitem{Schollwock2011}
+U.~Schollw\"{o}ck,
+The density-matrix renormalization group in the age of matrix product states,
+\textit{Ann.\ Phys.} \textbf{326}, 96--192 (2011).
+
+\bibitem{White1992}
+S.~R.~White,
+Density matrix formulation for quantum renormalization groups,
+\textit{Phys.\ Rev.\ Lett.} \textbf{69}, 2863 (1992).
+
+\bibitem{Vidal2003}
+G.~Vidal,
+Efficient classical simulation of slightly entangled quantum computations,
+\textit{Phys.\ Rev.\ Lett.} \textbf{91}, 147902 (2003).
+
+\bibitem{Liu2024}
+Z.~Liu and B.~K.~Clark,
+Classical simulability of Clifford+T circuits with Clifford-augmented matrix product states,
+arXiv:2412.17209 (2024).
+
+\bibitem{Qian2024}
+X.~Qian, J.~Huang, and M.~Qin,
+Augmenting density matrix renormalization group with Clifford circuits,
+\textit{Phys.\ Rev.\ Lett.} \textbf{133}, 190402 (2024).
+
+\bibitem{MelloTDVP2025}
+A.~F.~Mello, A.~Santini, G.~Lami, J.~De~Nardis, and M.~Collura,
+Clifford dressed time-dependent variational principle,
+\textit{Phys.\ Rev.\ Lett.} \textbf{134}, 150403 (2025).
+
+\bibitem{Mello2024}
+A.~F.~Mello, A.~Santini, and M.~Collura,
+Hybrid stabilizer matrix product operator,
+\textit{Phys.\ Rev.\ Lett.} \textbf{133}, 150604 (2024).
+
+\bibitem{Qian2024b}
+X.~Qian, J.~Huang, and M.~Qin,
+Clifford circuits augmented time-dependent variational principle,
+\textit{Phys.\ Rev.\ Lett.} \textbf{134}, 150404 (2025).
+
+\bibitem{MasotLlima2024}
+G.~Masot-Llima and A.~Garcia-Saez,
+Stabilizer tensor networks: universal quantum simulator on a basis of stabilizer states,
+\textit{Phys.\ Rev.\ Lett.} \textbf{133}, 230601 (2024).
+
+\bibitem{PauliProp2019}
+P.~Rall, D.~Liang, J.~Cook, and W.~Kretschmer,
+Simulation of qubit quantum circuits via Pauli propagation,
+\textit{Phys.\ Rev.\ A} \textbf{99}, 062337 (2019).
+
+\bibitem{Zhang2025}
+Y.~Zhang and Y.~Zhang,
+Classical simulability of quantum circuits with shallow magic depth,
+\textit{PRX Quantum} \textbf{6}, 010337 (2025).
+arXiv:2409.13809.
+
+\bibitem{Fux2025}
+G.~E.~Fux, B.~B\'{e}ri, R.~Fazio, and E.~Tirrito,
+Disentangling magic states with classically simulable quantum circuits,
+\textit{Phys.\ Rev.\ Lett.} \textbf{135}, 260605 (2025).
+
+\bibitem{Frau2025}
+M.~Frau, P.~S.~Tarabunga, M.~Collura, E.~Tirrito, and M.~Dalmonte,
+Stabilizer disentangling of conformal field theories,
+\textit{SciPost Phys.} \textbf{18}, 165 (2025).
+
+\bibitem{Huang2025}
+J.~Huang, X.~Qian, and M.~Qin,
+Nonstabilizerness entanglement entropy: a measure of hardness in the classical simulation of quantum many-body systems with tensor network states,
+\textit{Phys.\ Rev.\ A} \textbf{112}, 012425 (2025).
+
+\bibitem{Turkeshi2025}
+X.~Turkeshi, A.~Dymarsky, and P.~Sierant,
+Pauli spectrum and nonstabilizerness of typical quantum many-body states,
+\textit{Phys.\ Rev.\ B} \textbf{111}, 054301 (2025).
+
+\bibitem{Dehaene2003}
+J.~Dehaene and B.~De~Moor,
+The Clifford group, stabilizer states, and linear and quadratic operations over GF(2),
+\textit{Phys.\ Rev.\ A} \textbf{68}, 042318 (2003).
+
+\bibitem{Ross2016}
+N.~J.~Ross and P.~Selinger,
+Optimal ancilla-free Clifford+T approximation of $z$-rotations,
+\textit{Quantum Inf.\ Comput.} \textbf{16}, 901--953 (2016).
+arXiv:1403.2975.
+
+\bibitem{Vandaele2025}
+V.~Vandaele,
+Lower T-count with faster algorithms,
+\textit{Quantum} \textbf{9}, 1860 (2025).
+
+\bibitem{Krastanov2022}
+S.~Krastanov \textit{et al.},
+QuantumClifford.jl: Clifford circuits, graph states, and stabilizer formalism tools,
+Zenodo (2022).
+\url{https://doi.org/10.5281/zenodo.6796187}.
+
+\bibitem{Fishman2022}
+M.~Fishman, S.~R.~White, and E.~M.~Stoudenmire,
+The ITensor software library for tensor network calculations,
+\textit{SciPost Phys.\ Codebases} \textbf{4} (2022).
+
+\bibitem{Paviglianiti2024}
+A.~Paviglianiti, G.~Lami, M.~Collura, and A.~Silva,
+Estimating non-stabilizerness dynamics without simulating it,
+arXiv:2405.06054 (2024).
+
+\bibitem{BravyiGosset2016}
+S.~Bravyi and D.~Gosset,
+Improved classical simulation of quantum circuits dominated by Clifford gates,
+\textit{Phys.\ Rev.\ Lett.} \textbf{116}, 250501 (2016).
+
+\bibitem{Bravyi2019}
+S.~Bravyi, D.~Browne, P.~Calpin, E.~Campbell, D.~Gosset, and M.~Howard,
+Simulation of quantum circuits by low-rank stabilizer decompositions,
+\textit{Quantum} \textbf{3}, 181 (2019).
+
+\bibitem{Selinger2013}
+P.~Selinger,
+Quantum circuits of T-depth one,
+\textit{Phys.\ Rev.\ A} \textbf{87}, 042302 (2013).
+
+\bibitem{farhi2014quantum}
+E.~Farhi, J.~Goldstone, and S.~Gutmann,
+A quantum approximate optimization algorithm,
+\textit{arXiv:1411.4028} (2014).
+
+\end{thebibliography}
+
+%% ============================================================
+%% APPENDIX
+%% ============================================================
+\appendix
+
+\section{GF(2) Matrix Construction from Stabilizer Tableaux}
+\label{app:gf2_construction}
+
+We provide explicit details for computing the GF(2) matrix $z$ from a stabilizer tableau, following the conventions of Aaronson and Gottesman~\cite{Aaronson2004}.
+
+The stabilizer tableau for an $N$-qubit Clifford circuit $C$ is a $(2N) \times (2N+1)$ binary matrix.
+Rows $1$ through $N$ encode the destabilizer generators, and rows $N+1$ through $2N$ encode the stabilizer generators.
+The first $N$ columns store $x$-bits (presence of $X$), the next $N$ columns store $z$-bits (presence of $Z$), and the last column stores the phase.
+For the identity circuit, row $i$ (destabilizer) encodes $X_i$ and row $N+i$ (stabilizer) encodes $Z_i$.
+
+The Clifford gate update rules (applied to every row $i$) are:
+\begin{align}
+\text{Hadamard on $a$:}&\quad r_i \leftarrow r_i \oplus x_{ia}z_{ia};\; \text{swap}\; x_{ia} \leftrightarrow z_{ia} \\
+\text{Phase ($S$) on $a$:}&\quad r_i \leftarrow r_i \oplus x_{ia}z_{ia};\; z_{ia} \leftarrow z_{ia} \oplus x_{ia} \\
+\text{CNOT($a {\to} b$):}&\quad r_i \leftarrow r_i \oplus x_{ia}z_{ib}(x_{ib} \oplus z_{ia} \oplus 1) \notag\\
+&\quad x_{ib} \leftarrow x_{ib} \oplus x_{ia};\; z_{ia} \leftarrow z_{ia} \oplus z_{ib}
+\end{align}
+
+To construct the GF(2) matrix: process the circuit gate by gate, maintaining a single stabilizer tableau.
+For Clifford gates, apply the update rules above.
+For each non-Clifford gate on qubit $q_k$ (non-Clifford gates are \emph{not} applied to the tableau):
+\begin{enumerate}
+\item Read row $N + q_k$ of the tableau (the stabilizer row for qubit $q_k$).
+\item Extract the $x$-bits at positions $1$ through $N$: these form row $k$ of the GF(2) matrix $z$.
+\item Do not modify the tableau---the non-Clifford gate's $Z$-component commutes through subsequent Clifford tracking.
+\end{enumerate}
+
+\noindent The key correctness argument: the cumulative Clifford circuit $C_k$ preceding the $k$-th non-Clifford gate includes all Clifford gates processed so far (including those between earlier non-Clifford gates).
+The $x$-bits of row $N + q_k$ encode the image $C_k^\dagger Z_{q_k} C_k$, which is precisely the twisted Pauli $\bar{Z}^{[k]}$.
+Skipping the non-Clifford gate in the tableau update is valid because $R_z(\theta)^\dagger Z R_z(\theta) = Z$ (any $R_z$ commutes with $Z$ up to global phase), so the presence or absence of non-Clifford gates in the Clifford accumulation does not affect the $x$-bits of subsequent twisted Paulis.
+
+\section{GF(2) Gaussian Elimination}
+\label{app:gf2_elimination}
+
+The GF(2) rank is computed via Gaussian elimination over $\mathbb{F}_2$, where all arithmetic is modulo 2:
+
+\begin{algorithmic}[1]
+\Function{GF2Rank}{$M \in \mathbb{F}_2^{t \times N}$}
+\State $r \gets 0$  \Comment{current rank}
+\For{$c = 1, \ldots, N$}
+    \State Find smallest $i > r$ with $M_{ic} = 1$
+    \If{no such $i$} \textbf{continue} \EndIf
+    \State $r \gets r + 1$; swap rows $r$ and $i$
+    \For{each row $j \ne r$ with $M_{jc} = 1$}
+        \State $M_{j,:} \gets M_{j,:} \oplus M_{r,:}$ \Comment{XOR row}
+    \EndFor
+\EndFor
+\State \Return $r$
+\EndFunction
+\end{algorithmic}
+
+\noindent The cost is $O(\min(t,N)^2 \cdot \max(t,N))$ bit operations.
+For most circuits in this study ($N \le 64$, $t \le 7{,}000$), this completes in milliseconds.
+For the largest configurations ($N = 256$, $t \approx 80{,}000$), we use an online RREF variant that maintains an $N \times N$ matrix in reduced row echelon form, inserting rows one at a time in $O(Nr)$ bit operations per row where $r \le N$ is the current rank, giving $O(N^2 t)$ total time and $O(N^2)$ memory.
+
+\end{document}

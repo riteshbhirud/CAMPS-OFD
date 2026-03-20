@@ -1,5 +1,4 @@
 
-
 """
     build_gf2_matrix(twisted_paulis::Vector{<:PauliOperator}) -> Matrix{Bool}
 
@@ -88,10 +87,6 @@ function build_gf2_matrix_from_xbits(xbits::Vector{BitVector})::Matrix{Bool}
     return M
 end
 
-#==============================================================================#
-# GF(2) RANK COMPUTATION
-#==============================================================================#
-
 """
     gf2_rank(M::Matrix{Bool}) -> Int
 
@@ -170,10 +165,6 @@ function gf2_rank!(M::Matrix{Bool})::Int
 
     return rank
 end
-
-#==============================================================================#
-# BOND DIMENSION PREDICTION
-#==============================================================================#
 
 """
     predict_bond_dimension(twisted_paulis::Vector{<:PauliOperator}) -> Int
@@ -265,10 +256,6 @@ function predict_bond_dimension(M::Matrix{Bool})::Int
     end
 end
 
-#==============================================================================#
-# DISENTANGLABILITY ANALYSIS
-#==============================================================================#
-
 """
     count_disentanglable(twisted_paulis::Vector{<:PauliOperator},
                          free_qubits::BitVector) -> Int
@@ -339,10 +326,6 @@ function find_disentangling_qubit(P::PauliOperator, free_qubits::BitVector)::Uni
     end
     return nothing
 end
-
-#==============================================================================#
-# ANALYSIS UTILITIES
-#==============================================================================#
 
 """
     analyze_gf2_structure(twisted_paulis::Vector{<:PauliOperator}) -> NamedTuple
@@ -516,10 +499,6 @@ function find_independent_rows_with_basis(M::Matrix{Bool})::Tuple{Vector{Int}, M
     return (independent_indices, M_work)
 end
 
-#==============================================================================#
-# GF(2) NULL SPACE
-#==============================================================================#
-
 """
     gf2_null_space(M::Matrix{Bool}) -> Vector{BitVector}
 
@@ -534,8 +513,8 @@ The null space vectors indicate which linear combinations of rows sum to zero.
 - `Vector{BitVector}`: Basis vectors for null space (each has length t)
 
 # Theory
-If v is in the null space (M' * v = 0 where * is GF(2) multiplication),
-then the sum of rows M[i,:] for which v[i]=1 is zero (mod 2).
+If v is in the left null space (v^T M = 0 over GF(2)),
+then the XOR of rows M[i,:] for which v[i]=1 is zero.
 
 This identifies "redundant" T-gates: if twisted Paulis P[i₁], P[i₂], P[i₃]
 are such that their x-bits XOR to zero, then one of them is redundant
@@ -565,10 +544,6 @@ function gf2_null_space(M::Matrix{Bool})::Vector{BitVector}
 
     return null_basis
 end
-
-#==============================================================================#
-# INCREMENTAL RANK UPDATE
-#==============================================================================#
 
 """
     incremental_rank_update(M::Matrix{Bool}, new_row::BitVector) -> Tuple{Int, Bool}

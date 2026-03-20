@@ -392,4 +392,80 @@ using LinearAlgebra
         end
     end
 
+    @testset "QFT correctness — DFT amplitudes" begin
+        @testset "QFT|0⟩ = uniform superposition" begin
+            for n in 2:4
+                circuit = qft_circuit(n)
+                result = simulate_circuit(circuit, n; strategy=HybridStrategy())
+                ψ = state_vector(result.state)
+                expected_amp = 1.0 / sqrt(2^n)
+                for amp in ψ
+                    @test abs(amp) ≈ expected_amp atol=1e-8
+                end
+            end
+        end
+
+        @testset "QFT|1⟩ — roots of unity, equal magnitude" begin
+            for n in [2, 3, 4]
+                state = CAMPSState(n)
+                initialize!(state)
+                apply_gate!(state, HGate(1))
+                apply_gate!(state, SGate(1))
+                apply_gate!(state, SGate(1))
+                apply_gate!(state, HGate(1))
+                for g in qft_circuit(n)
+                    apply_gate!(state, g)
+                end
+                ψ = state_vector(state)
+                norm2 = sum(abs2, ψ)
+                if norm2 > 0.5
+                    expected_amp = 1.0 / sqrt(2^n)
+                    for amp in ψ
+                        @test abs(amp) ≈ expected_amp atol=1e-8
+                    end
+                end
+            end
+        end
+    end
+
+    @testset "Inverse QFT round-trip: QFT†·QFT = I" begin
+        for n in 2:4
+            circuit = vcat(qft_circuit(n), inverse_qft_circuit(n))
+            result = simulate_circuit(circuit, n; strategy=HybridStrategy())
+            ψ = state_vector(result.state)
+            @test abs(ψ[1]) ≈ 1.0 atol=1e-7
+            for i in 2:2^n
+                @test abs(ψ[i]) < 1e-7
+            end
+        end
+    end
+
+    @testset "W state circuit — normalized output" begin
+        for n in 3:4
+            circuit = w_state_circuit(n)
+            result = simulate_circuit(circuit, n; strategy=NoDisentangling(), max_bond=1024)
+            ψ = state_vector(result.state)
+            @test sum(abs2, ψ) ≈ 1.0 atol=1e-8
+            @test count(a -> abs(a) > 1e-8, ψ) >= 2
+        end
+    end
+
+    @testset "Fidelity — partial overlap" begin
+        state = CAMPSState(2)
+        initialize!(state)
+        apply_gate!(state, HGate(1))
+        target = ComplexF64[1, 0, 0, 0]
+        F = fidelity_with_target(state, target)
+        @test F ≈ 0.5 atol=1e-10
+    end
+
+    @testset "Sparse state vector — non-trivial" begin
+        state = CAMPSState(3)
+        initialize!(state)
+        apply_gate!(state, HGate(1))
+        apply_gate!(state, CNOTGate(1, 2))
+        sparse_ψ = state_vector_sparse(state; threshold=1e-10)
+        @test length(sparse_ψ) == 2
+    end
+
 end

@@ -1,6 +1,5 @@
 """
 
-
 .. all 14 quantum circuit families for benchmark generation.
 
 Phase 1 Families (9 baseline circuits):
@@ -20,7 +19,6 @@ Phase 2 Families (5 advanced NISQ algorithms):
 12. QFT - Quantum Fourier Transform (Nielsen & Chuang Ch. 5.1)
 13. Grover Search - Quantum search (Nielsen & Chuang Ch. 6.1)
 14. VQE Hardware-Efficient - Variational eigensolver (Kandala et al. Nature 2017)
-
 
 Usage:
     include("circuit_families_complete.jl")
@@ -524,14 +522,21 @@ end
 
 function generate_circuit(::QAOAMaxCutCircuit, params::Dict)
     n = params[:n_qubits]
-    n_t_target = params[:n_t_gates]
+    n_t_target = get(params, :n_t_gates, n)
     seed = get(params, :seed, 42)
 
     n % 2 == 0 || error("QAOA needs even n for 3-regular graph")
 
     edges = generate_random_3regular_graph(n; seed=seed)
-    target_t_fraction = n_t_target / n
-    (γ, β), predicted_t = select_qaoa_angles(n, target_t_fraction; seed=seed)
+
+    if haskey(params, :gamma) && haskey(params, :beta)
+        γ = params[:gamma]
+        β = params[:beta]
+        predicted_t = n_t_target
+    else
+        target_t_fraction = n_t_target / n
+        (γ, β), predicted_t = select_qaoa_angles(n, target_t_fraction; seed=seed)
+    end
 
     gates = Tuple{Symbol, Vector{Int}}[]
     t_positions = Int[]
@@ -563,6 +568,8 @@ function generate_circuit(::QAOAMaxCutCircuit, params::Dict)
             push!(gates, (:Z, [q2]))
             push!(gates, (:T, [q2]))
         elseif abs(γ - 7π/4) < 1e-10
+            push!(gates, (:Z, [q2]))
+            push!(gates, (:S, [q2]))
             push!(gates, (:T, [q2]))
         end
 
@@ -594,6 +601,8 @@ function generate_circuit(::QAOAMaxCutCircuit, params::Dict)
             push!(gates, (:Z, [i]))
             push!(gates, (:T, [i]))
         elseif abs(β_mixer_normalized - 7π/4) < 1e-10
+            push!(gates, (:Z, [i]))
+            push!(gates, (:S, [i]))
             push!(gates, (:T, [i]))
         end
 
@@ -804,33 +813,15 @@ function generate_circuit(family::QFTFamily; n_qubits::Int, density::Symbol, see
             control_qubit = j + k - 1
             target_qubit = j
 
-            if k == 2
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                push!(gates, CliffordGate([(:S, target_qubit)], [target_qubit]))
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                push!(gates, CliffordGate([(:Sdag, target_qubit)], [target_qubit]))
-            elseif k == 3
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                push!(gates, RotationGate(target_qubit, :Z, -π/4))
-                push!(t_positions, length(gates))
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                push!(gates, RotationGate(control_qubit, :Z, π/4))
-                push!(t_positions, length(gates))
-                push!(gates, RotationGate(target_qubit, :Z, π/4))
-                push!(t_positions, length(gates))
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                push!(gates, RotationGate(target_qubit, :Z, -π/4))
-                push!(t_positions, length(gates))
-            else
-                n_t_this_gate = 4 * (k - 2)
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                for _ in 1:n_t_this_gate
-                    push!(gates, RotationGate(target_qubit, :Z, π/4))
-                    push!(t_positions, length(gates))
-                end
-                push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
-                push!(gates, CliffordGate([(:H, target_qubit)], [target_qubit]))
-            end
+            θ = 2π / 2^k
+            push!(gates, RotationGate(target_qubit, :Z, θ/2))
+            push!(t_positions, length(gates))
+            push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
+            push!(gates, RotationGate(target_qubit, :Z, -θ/2))
+            push!(t_positions, length(gates))
+            push!(gates, CliffordGate([(:CNOT, control_qubit, target_qubit)], [control_qubit, target_qubit]))
+            push!(gates, RotationGate(control_qubit, :Z, θ/2))
+            push!(t_positions, length(gates))
 
             n_controlled_rk += 1
             rk_distribution[k] = get(rk_distribution, k, 0) + 1

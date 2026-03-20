@@ -80,10 +80,6 @@ function resolve_single_qubit_clifford(index::Int, qubit::Int)::Vector
     return [resolve_symbolic_gate(spec) for spec in specs]
 end
 
-#==============================================================================#
-# CNOT-CLASS REPRESENTATIVES (for two-qubit Cliffords)
-#==============================================================================#
-
 """
     CNOT_CLASS_GENERATORS
 
@@ -94,7 +90,7 @@ The two-qubit Clifford group decomposes as:
 
 The CNOT-class has 720 elements up to left multiplication by Cl_1 × Cl_1.
 
-We use a minimal generating set based on {CNOT, CZ, SWAP, iSWAP, and identity}.
+Uses a minimal generating set based on {CNOT, CZ, SWAP, iSWAP, and identity}.
 """
 const CNOT_CLASS_GENERATORS_TEMPLATE = [
     [],
@@ -119,7 +115,7 @@ This iterates over the full Cl_2 by combining:
 
 Total: 24 × 24 × (number of CNOT classes) elements.
 
-For OBD, we iterate over a representative subset to find the optimal gate.
+For OBD, a representative subset is iterated to find the optimal gate.
 """
 struct TwoQubitCliffordIterator
     qubit1::Int
@@ -147,10 +143,6 @@ function two_qubit_clifford_count(include_singles::Bool=true)::Int
         return n_entangling
     end
 end
-
-#==============================================================================#
-# USING QuantumClifford's enumerate_cliffords
-#==============================================================================#
 
 """
     get_all_two_qubit_cliffords() -> Vector
@@ -190,10 +182,6 @@ function sample_two_qubit_cliffords(n::Int; seed::Union{Int, Nothing}=nothing)::
     end
     return [random_clifford(2) for _ in 1:n]
 end
-
-#==============================================================================#
-# CLIFFORD TO MATRIX CONVERSION
-#==============================================================================#
 
 """
     clifford_to_matrix(C::CliffordOperator) -> Matrix{ComplexF64}
@@ -258,13 +246,12 @@ end
 
 Apply Pauli operator P to state vector psi in-place, correctly handling Y = iXZ phase.
 
-For each basis state |j⟩ with amplitude ψ_j:
-P|j⟩ = (generator_phase) × (Y_phase) × (Z_phase) × |j ⊕ x_P⟩
+In QuantumClifford, P = i^{phase_byte} · ∏_q σ_q where σ(1,1) = Y (not XZ).
+To compute the action on computational basis states, Y is decomposed as Y = iXZ:
 
-where:
-- generator_phase: i^{P.phase[]}
-- Y_phase: i for each qubit with Y (X=1, Z=1)
-- Z_phase: (-1)^{z·j} where z is Z-pattern and j is basis state
+    P|j⟩ = i^{phase_byte} · i^{n_Y} · (-1)^{∑_{z_q=1} j_q} · |j ⊕ x_P⟩
+
+The y_phase_count term accounts for the i factor from each Y = iXZ decomposition.
 """
 function apply_pauli_to_statevector_with_y_phase!(psi::Vector{ComplexF64}, P::PauliOperator, n::Int)
     dim = 2^n
@@ -320,7 +307,7 @@ end
 Compute the state vector for C|j⟩ with proper phase tracking.
 
 The destabilizer D represents the state C|j⟩, but may have lost global phase.
-We recover the correct phases by tracking how the Clifford acts on X operators.
+The correct phases are recovered by tracking how the Clifford acts on X operators.
 """
 function destabilizer_to_statevector_with_phase(D::Destabilizer, C::CliffordOperator, input_j::Int, n::Int)::Vector{ComplexF64}
     dim = 2^n
@@ -389,7 +376,7 @@ end
 
 Compute C|0...0⟩ for a Clifford operator.
 
-The result is a stabilizer state, which we convert to a state vector.
+The result is a stabilizer state, converted here to a state vector.
 """
 function clifford_on_zero_state(C::CliffordOperator, n::Int)::Vector{ComplexF64}
     D = one(Destabilizer, n)
@@ -404,7 +391,7 @@ end
 Apply the operator C X_qubit C† to state vector psi (in-place).
 
 C X_qubit C† is a Pauli operator (since Cliffords map Paulis to Paulis).
-We compute it and apply it to psi.
+This is computed and applied to psi.
 """
 function apply_conjugated_x!(psi::Vector{ComplexF64}, C::CliffordOperator, qubit::Int, n::Int)
     X_q = single_x(n, qubit)
@@ -489,14 +476,14 @@ Compute C|j⟩ using the destabilizer formalism.
 4. Convert result to state vector using projectrand-based extraction
 
 # Basis state convention
-We use big-endian ordering: |j⟩ = |b_{n-1} ... b_1 b_0⟩ where j = Σ_k b_k 2^{n-1-k}.
+Uses big-endian ordering: |j⟩ = |b_{n-1} ... b_1 b_0⟩ where j = Σ_k b_k 2^{n-1-k}.
 This means:
 - j=0: |00...0⟩
 - j=1: |00...1⟩ (qubit n is |1⟩)
 - j=2: |00..10⟩ (qubit n-1 is |1⟩)
 etc.
 
-We use little-endian: bit k of j corresponds to qubit (k+1).
+Uses little-endian: bit k of j corresponds to qubit (k+1).
 """
 function clifford_on_basis_state_destab(C::CliffordOperator, j::Int, n::Int)::Vector{ComplexF64}
     dim = 2^n
@@ -531,7 +518,7 @@ Uses the Aaronson-Gottesman algorithm (arXiv:quant-ph/0406196).
 For a stabilizer state with stabilizers S₁,...,Sₙ, the state is:
 |ψ⟩ ∝ Π_i (I + S_i) |0⟩^n
 
-For small systems (n ≤ 12), we compute amplitudes by:
+For small systems (n ≤ 12), amplitudes are computed by:
 1. Finding the computational basis states in the stabilizer code space
 2. Computing relative phases from the destabilizer structure
 
@@ -760,7 +747,7 @@ The support is determined by the X-parts of stabilizers:
   by the X-parts.
 
 For Z-only stabilizers, the support state is determined elsewhere (in the
-Z-eigenvalue check), so here we only need to check the X-part constraint.
+Z-eigenvalue check), so here only the X-part constraint needs checking.
 
 When X-matrix is all zeros, ANY state that passes the Z-eigenvalue check
 is in the support (there's exactly one such state).
@@ -924,7 +911,7 @@ destabilizers d_1,...,d_n and stabilizers s_1,...,s_n:
 
 where |ref⟩ is determined by the destabilizers.
 
-For computational basis states, we use the fact that:
+For computational basis states, the key fact is:
 ⟨j|ψ⟩ = 1/√N × phase_factor
 
 where N = 2^n / (# of basis states in support).
@@ -961,10 +948,6 @@ function compute_amplitude_phase(D::Destabilizer, j::Int, n::Int)::ComplexF64
 
     return phase_factor
 end
-
-#==============================================================================#
-# TWO-QUBIT CLIFFORD AS ITensor
-#==============================================================================#
 
 """
     clifford_to_itensor(C::CliffordOperator, s1::Index, s2::Index) -> ITensor
@@ -1014,10 +997,6 @@ function make_clifford_gate_tensors(qubit1::Int, qubit2::Int,
     cliffords = get_all_two_qubit_cliffords()
     return [clifford_to_itensor(C, s1, s2) for C in cliffords]
 end
-
-#==============================================================================#
-# EFFICIENT OBD SEARCH UTILITIES
-#==============================================================================#
 
 """
     TwoQubitCliffordCache
@@ -1078,16 +1057,12 @@ function get_clifford_inverse_matrix(cache::TwoQubitCliffordCache, index::Int)::
     return cache.inverse_matrices[index]
 end
 
-#==============================================================================#
-# REPRESENTATIVE SUBSET FOR APPROXIMATE OBD
-#==============================================================================#
-
 """
     get_cnot_class_representatives() -> Vector
 
 Get a smaller set of CNOT-class representatives for faster OBD.
 
-Instead of searching over all 11,520 Cliffords, we can search over:
+Instead of searching over all 11,520 Cliffords, the search covers:
 1. The 3 CNOT-class generators: I, CNOT, CZ, SWAP (identity, entangling)
 2. A few variants with single-qubit gates
 
@@ -1192,10 +1167,6 @@ function get_expanded_representatives(; depth::Int=2)::Vector
     return result
 end
 
-#==============================================================================#
-# ENTROPY COMPUTATION FOR OBD
-#==============================================================================#
-
 """
     compute_renyi2_entropy(rho::Matrix{ComplexF64}) -> Float64
 
@@ -1246,10 +1217,6 @@ function compute_von_neumann_entropy(rho::Matrix{ComplexF64})::Float64
 
     return entropy
 end
-
-#==============================================================================#
-# LOCAL DENSITY MATRIX UTILITIES
-#==============================================================================#
 
 """
     extract_two_site_rdm(mps::MPS, site1::Int, site2::Int) -> Matrix{ComplexF64}

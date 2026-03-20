@@ -1,5 +1,4 @@
 
-
 """
     initialize_mps(n::Int) -> Tuple{MPS, Vector{Index}}
 
@@ -73,10 +72,6 @@ function normalize_mps!(mps::MPS)::MPS
     return mps
 end
 
-#==============================================================================#
-# GATE CONSTRUCTION
-#==============================================================================#
-
 """
     pauli_to_itensor(σ::Symbol, s::Index) -> ITensor
 
@@ -134,10 +129,6 @@ function identity_itensor(s::Index)::ITensor
     return ITensor(mat, s', dag(s))
 end
 
-#==============================================================================#
-# SINGLE-SITE GATE APPLICATION
-#==============================================================================#
-
 """
     apply_single_site_gate!(mps::MPS, gate::ITensor, site::Int) -> MPS
 
@@ -182,10 +173,6 @@ function apply_local_rotation!(mps::MPS, sites::AbstractVector, qubit::Int,
     gate = rotation_to_itensor(axis, Float64(θ), sites[qubit])
     return apply_single_site_gate!(mps, gate, qubit)
 end
-
-#==============================================================================#
-# PAULI STRING APPLICATION
-#==============================================================================#
 
 """
     apply_pauli_to_mps!(mps::MPS, sites::AbstractVector, σ::Symbol, qubit::Int) -> MPS
@@ -270,10 +257,6 @@ function apply_pauli_string_to_copy(mps::MPS, P::PauliOperator, sites::AbstractV
     return apply_pauli_string!(mps_copy, P, sites)
 end
 
-#==============================================================================#
-# TWISTED ROTATION APPLICATION
-#==============================================================================#
-
 """
     apply_twisted_rotation!(mps::MPS, sites::Vector{<:Index}, P::PauliOperator,
                             θ::Real; max_bond::Int=1024, cutoff::Float64=1e-15) -> MPS
@@ -348,10 +331,6 @@ function apply_twisted_rotation_to_copy(mps::MPS, sites::AbstractVector, P::Paul
     return apply_twisted_rotation!(mps_copy, sites, P, θ; max_bond=max_bond, cutoff=cutoff)
 end
 
-#==============================================================================#
-# MPS TRUNCATION
-#==============================================================================#
-
 """
     truncate_mps!(mps::MPS; max_bond::Int=1024, cutoff::Float64=1e-15) -> MPS
 
@@ -369,10 +348,6 @@ function truncate_mps!(mps::MPS; max_bond::Int=1024, cutoff::Float64=1e-15)::MPS
     truncate!(mps; maxdim=max_bond, cutoff=cutoff)
     return mps
 end
-
-#==============================================================================#
-# ENTANGLEMENT ENTROPY
-#==============================================================================#
 
 """
     entanglement_entropy(mps::MPS, bond::Int) -> Float64
@@ -544,10 +519,6 @@ function max_entanglement_entropy(mps::MPS)::Float64
     return isempty(entropies) ? 0.0 : maximum(entropies)
 end
 
-#==============================================================================#
-# MPS SAMPLING
-#==============================================================================#
-
 """
     sample_mps(mps::MPS) -> Vector{Int}
 
@@ -560,7 +531,7 @@ Sample a computational basis state from the MPS probability distribution.
 - `Vector{Int}`: Sampled bitstring (0s and 1s)
 
 # Note
-ITensor's sample returns 1-indexed values (1 or 2), which we convert to (0 or 1).
+ITensor's sample returns 1-indexed values (1 or 2), converted here to (0 or 1).
 """
 function sample_mps(mps::MPS)::Vector{Int}
     mps_ortho = orthogonalize(mps, 1)
@@ -585,10 +556,6 @@ Sample multiple computational basis states from the MPS.
 function sample_mps_multiple(mps::MPS, num_samples::Int)::Vector{Vector{Int}}
     return [sample_mps(mps) for _ in 1:num_samples]
 end
-
-#==============================================================================#
-# MPS INNER PRODUCTS
-#==============================================================================#
 
 """
     mps_overlap(mps1::MPS, mps2::MPS) -> ComplexF64
@@ -655,10 +622,6 @@ function mps_amplitude(mps::MPS, bitstring::Vector{Int}, sites::AbstractVector):
 
     return inner(product_mps, mps)
 end
-
-#==============================================================================#
-# TWO-QUBIT GATES (for OBD)
-#==============================================================================#
 
 """
     apply_two_qubit_gate!(mps::MPS, gate::ITensor, site1::Int, site2::Int;

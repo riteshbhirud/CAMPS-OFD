@@ -329,3 +329,46 @@ end
         @test is_initialized(state)
     end
 end
+
+@testset "Entanglement Entropy — entangled states" begin
+    @testset "Twisted rotation with X Pauli creates entanglement" begin
+        mps, sites = initialize_mps(2)
+        P = P"XX"
+        apply_twisted_rotation!(mps, sites, P, π/2; max_bond=10)
+        S = CAMPS.entanglement_entropy(mps, 1)
+        @test S >= -1e-10
+        @test get_mps_bond_dimension(mps) >= 1
+    end
+end
+
+@testset "MPS overlap of orthogonal states" begin
+    mps1, sites1 = initialize_mps(2)
+    mps2, sites2 = initialize_mps(2)
+    apply_pauli_to_mps!(mps2, sites2, :X, 1)
+
+    ov = mps_overlap(mps1, mps2)
+    @test abs(ov) < 1e-10
+end
+
+@testset "Two-qubit gate correctness — CNOT" begin
+    mps, sites = initialize_mps(2)
+    apply_pauli_to_mps!(mps, sites, :X, 1)
+    CNOT_mat = ComplexF64[1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0]
+    gate_tensor = matrix_to_two_qubit_itensor(CNOT_mat, sites[1], sites[2])
+    apply_two_qubit_gate!(mps, gate_tensor, 1, 2; max_bond=10, cutoff=1e-15)
+    @test mps_probability(mps, [1, 1], sites) ≈ 1.0 atol=1e-10
+    @test mps_probability(mps, [1, 0], sites) ≈ 0.0 atol=1e-10
+    @test mps_probability(mps, [0, 0], sites) ≈ 0.0 atol=1e-10
+end
+
+@testset "Truncation accuracy" begin
+    mps, sites = initialize_mps(4)
+    for q in 1:3
+        P = single_x(4, q)
+        apply_twisted_rotation!(mps, sites, P, π/3; max_bond=100)
+    end
+
+    truncate_mps!(mps; max_bond=4, cutoff=1e-12)
+    @test get_mps_bond_dimension(mps) <= 4
+    @test get_mps_norm(mps) > 0
+end

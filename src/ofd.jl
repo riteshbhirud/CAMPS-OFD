@@ -1,5 +1,4 @@
 
-
 """
     build_disentangler_gates(P::PauliOperator, control_qubit::Int) -> Vector
 
@@ -76,15 +75,14 @@ Build a controlled-σ gate with the specified control and target qubits.
 # Implementation
 - CX (CNOT): sCNOT(control, target)
 - CZ: sCPHASE(control, target) (symmetric)
-- CY: Decomposed as S†·CX·S on target, i.e., (I⊗S†)·CNOT·(I⊗S)
+- CY: Decomposed using S·X·S† = Y, giving CY = (I⊗S)·CNOT·(I⊗S†)
 
 # Note on CY decomposition
-CY = (I ⊗ S†) · CNOT · (I ⊗ S)
-This is because S·X·S† = Y, so:
-    |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ Y
-  = |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ S·X·S†
-  = (I⊗S†)·(|0⟩⟨0|⊗I + |1⟩⟨1|⊗X)·(I⊗S)
-  = (I⊗S†)·CNOT·(I⊗S)
+Since S·X·S† = Y:
+    CY = |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ Y
+       = |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ S·X·S†
+       = (I⊗S) · CNOT · (I⊗S†)
+In circuit order (left to right): apply S† on target, then CNOT, then S on target.
 """
 function build_controlled_pauli_gate(σ::Symbol, control::Int, target::Int)
     if σ == :X
@@ -120,10 +118,6 @@ function flatten_gate_sequence(gates::Vector)::Vector
     end
     return result
 end
-
-#==============================================================================#
-# OFD APPLICATION
-#==============================================================================#
 
 """
     apply_ofd!(state::CAMPSState, P_twisted::PauliOperator, θ::Real,
@@ -246,10 +240,6 @@ function try_apply_ofd!(state::CAMPSState, P_twisted::PauliOperator, θ::Real)::
     return (true, state)
 end
 
-#==============================================================================#
-# OFD FOR T-GATE SPECIFICALLY
-#==============================================================================#
-
 """
     apply_t_gate_ofd!(state::CAMPSState, qubit::Int) -> Tuple{Bool, CAMPSState}
 
@@ -311,10 +301,6 @@ function apply_tdag_gate_ofd!(state::CAMPSState, qubit::Int)::Tuple{Bool, CAMPSS
     P_twisted = compute_twisted_pauli(state, :Z, qubit)
     return try_apply_ofd!(state, P_twisted, -π/4)
 end
-
-#==============================================================================#
-# BATCH OFD (OFDS ALGORITHM)
-#==============================================================================#
 
 """
     OFDSResult
@@ -409,17 +395,13 @@ function apply_ofds!(state::CAMPSState, t_gates::Vector{Int})::OFDSResult
     )
 end
 
-#==============================================================================#
-# TWISTED PAULI UPDATE AFTER OFD
-#==============================================================================#
-
 """
     update_twisted_pauli_after_ofd(P::PauliOperator, D_gates::Vector,
                                     control::Int) -> PauliOperator
 
 Update a twisted Pauli after OFD disentangler has been applied.
 
-When we apply OFD with disentangler D, the accumulated Clifford becomes C' = C·D†.
+When OFD is applied with disentangler D, the accumulated Clifford becomes C' = C·D†.
 Subsequent twisted Paulis must account for this change:
 
     P̃'_new = (C')† · P · C' = D · C† · P · C · D† = D · P̃ · D†
@@ -433,8 +415,8 @@ Subsequent twisted Paulis must account for this change:
 - `PauliOperator`: Updated twisted Pauli
 
 # Note
-This function is used when we need to update the twisted Paulis of future
-gates after applying OFD. In many cases, we recompute from scratch instead.
+Used to update the twisted Paulis of future gates after applying OFD.
+In many cases, recomputing from scratch is preferred.
 """
 function update_twisted_pauli_after_ofd(P::PauliOperator, D_gates::Vector,
                                          control::Int)::PauliOperator
@@ -453,10 +435,6 @@ function update_twisted_pauli_after_ofd(P::PauliOperator, D_gates::Vector,
 
     return commute_pauli_through_clifford(P, temp_dest)
 end
-
-#==============================================================================#
-# OFD ANALYSIS UTILITIES
-#==============================================================================#
 
 """
     analyze_ofd_applicability(state::CAMPSState, qubit::Int) -> NamedTuple
@@ -572,10 +550,6 @@ function count_ofd_applicable(state::CAMPSState, t_gates::Vector{Int})
     )
 end
 
-#==============================================================================#
-# OFD GATE SEQUENCE GENERATION
-#==============================================================================#
-
 """
     generate_ofd_circuit(P_twisted::PauliOperator, control::Int,
                           θ::Real) -> Vector{Gate}
@@ -625,26 +599,28 @@ function generate_ofd_circuit(P_twisted::PauliOperator, control::Int,
         end
     end
 
+    θ_effective = Float64(θ)
+    phase_val = P_twisted.phase[]
+    if phase_val == 0x02
+        θ_effective = -θ_effective
+    end
+
     if σ_control == :X
-        push!(gates, RxGate(control, Float64(θ)))
+        push!(gates, RxGate(control, θ_effective))
     elseif σ_control == :Y
-        push!(gates, RyGate(control, Float64(θ)))
+        push!(gates, RyGate(control, θ_effective))
     end
 
     return gates
 end
 
-#==============================================================================#
-# MAGIC STATE PROPERTIES
-#==============================================================================#
-
 """
     t_gate_magic_state() -> Tuple{ComplexF64, ComplexF64}
 
-Return the amplitudes (α, β) for the T-gate magic state.
+Return the amplitudes (α, β) for the OFD magic state produced by a T gate.
 
-The T-gate magic state is: |T⟩ = α|0⟩ + β|1⟩
-where α = cos(π/8) and β = -i·sin(π/8).
+After OFD disentangling, the T gate (Rz(π/4)) becomes Rx(π/4) on the control qubit.
+The resulting magic state is: |m⟩ = Rx(π/4)|0⟩ = cos(π/8)|0⟩ - i·sin(π/8)|1⟩.
 
 # Returns
 - `Tuple{ComplexF64, ComplexF64}`: (α, β) amplitudes

@@ -1,6 +1,3 @@
-#==============================================================================#
-#                         PAULI SYMBOL CONVERSION                              #
-#==============================================================================#
 
 """
     xz_to_symbol(x::Bool, z::Bool) -> Symbol
@@ -77,10 +74,6 @@ function symbol_to_xz(σ::Symbol)::Tuple{Bool, Bool}
         throw(ArgumentError("Unknown Pauli symbol: $σ. Expected :I, :X, :Y, or :Z"))
     end
 end
-
-#==============================================================================#
-#                            PHASE CONVERSION                                  #
-#==============================================================================#
 
 """
     phase_to_complex(phase_byte::UInt8) -> ComplexF64
@@ -165,10 +158,6 @@ function complex_to_phase(c::Real)::UInt8
     return complex_to_phase(Complex(c))
 end
 
-#==============================================================================#
-#                         PAULI MATRIX UTILITIES                               #
-#==============================================================================#
-
 """
     pauli_matrix(σ::Symbol) -> Matrix{ComplexF64}
 
@@ -240,10 +229,6 @@ function rotation_matrix(axis::Symbol, θ::Real)::Matrix{ComplexF64}
     end
 end
 
-#==============================================================================#
-#                      ROTATION PARAMETER EXTRACTION                           #
-#==============================================================================#
-
 """
     rotation_coefficients(θ::Real) -> Tuple{ComplexF64, ComplexF64}
 
@@ -278,10 +263,6 @@ function rotation_coefficients(θ::Real)::Tuple{ComplexF64, ComplexF64}
     β = ComplexF64(-im * sin(θ/2))
     return (α, β)
 end
-
-#==============================================================================#
-#                            ANGLE UTILITIES                                   #
-#==============================================================================#
 
 """
     is_clifford_angle(θ::Real; tol::Float64=1e-10) -> Bool
@@ -331,10 +312,6 @@ function normalize_angle(θ::Real)::Float64
     θ_norm = mod(Float64(θ), 2π)
     return θ_norm
 end
-
-#==============================================================================#
-#                          BIT STRING UTILITIES                                #
-#==============================================================================#
 
 """
     int_to_bits(x::Integer, n::Int) -> BitVector
@@ -444,10 +421,6 @@ function vector_to_bitstring(v::Vector{<:Integer})::String
     return join(v)
 end
 
-#==============================================================================#
-#                           CIRCUIT UTILITIES                                  #
-#==============================================================================#
-
 """
     count_gates_by_type(circuit::Vector{<:Gate}) -> Dict{Symbol, Int}
 
@@ -532,10 +505,6 @@ function gate_depth(circuit::Vector{<:Gate}, n_qubits::Int)::Int
     return maximum(qubit_available)
 end
 
-#==============================================================================#
-#                          VALIDATION UTILITIES                                #
-#==============================================================================#
-
 """
     validate_qubit_index(qubit::Int, n_qubits::Int; name::String="qubit")
 
@@ -598,10 +567,6 @@ function validate_circuit(circuit::Vector{<:Gate}, n_qubits::Int)
     end
     return nothing
 end
-
-#==============================================================================#
-#                          NUMERICAL UTILITIES                                 #
-#==============================================================================#
 
 """
     isapprox_zero(x::Number; atol::Real=1e-14) -> Bool

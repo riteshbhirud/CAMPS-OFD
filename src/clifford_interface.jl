@@ -1,5 +1,4 @@
 
-
 """
     initialize_clifford(n::Int) -> Destabilizer
 
@@ -8,8 +7,8 @@ Create an identity Clifford operator for n qubits.
 The identity Clifford is represented as a Destabilizer initialized from
 the stabilizer state |0⟩^⊗n (which has stabilizers Z₁, Z₂, ..., Zₙ).
 
-We use Destabilizer (not MixedDestabilizer) because:
-1. We're tracking a Clifford unitary, which is always full-rank
+Uses Destabilizer (not MixedDestabilizer) because:
+1. The tracked Clifford unitary is always full-rank
 2. Destabilizer can be converted to CliffordOperator for Pauli conjugation
 3. MixedDestabilizer is meant for mixed states, not unitary tracking
 
@@ -28,17 +27,13 @@ function initialize_clifford(n::Int)
     return one(Destabilizer, n)
 end
 
-#==============================================================================#
-# TWISTED PAULI COMPUTATION
-#==============================================================================#
-
 """
     commute_pauli_through_clifford(P::PauliOperator, C::Destabilizer) -> PauliOperator
 
 Compute the twisted Pauli P̃ = C† · P · C.
 
 This is the core operation for CAMPS: when a rotation R_P(θ) is applied after
-Clifford C, we have C · R_P(θ) = R_{P̃}(θ) · C where P̃ = C† · P · C.
+Clifford C, the identity C · R_P(θ) = R_{P̃}(θ) · C holds where P̃ = C† · P · C.
 
 # How it works
 1. Convert the Destabilizer C to a CliffordOperator
@@ -103,10 +98,6 @@ function axis_to_pauli(axis::Symbol, qubit::Int, n::Int)::PauliOperator
     end
 end
 
-#==============================================================================#
-# CLIFFORD GATE APPLICATION
-#==============================================================================#
-
 """
     apply_clifford_gate!(C::Destabilizer, gate) -> Destabilizer
 
@@ -161,7 +152,7 @@ end
 Compute C_new = C · D† where D is the Clifford operator built from the gates.
 
 Used in OFD: after building disentangler D from controlled-Pauli gates,
-we need to right-multiply the accumulated Clifford by D†.
+the accumulated Clifford is right-multiplied by D†.
 
 # Theory (for OFD)
 When applying a non-Clifford rotation R_P(θ) to the CAMPS state |ψ⟩ = C|mps⟩:
@@ -224,10 +215,6 @@ function apply_inverse_gates!(C::Destabilizer, gates::Vector)::Destabilizer
 
     return C
 end
-
-#==============================================================================#
-# SYMBOLIC GATE CONVERSION
-#==============================================================================#
 
 """
     resolve_symbolic_gate(gate_spec::Tuple) -> Any
@@ -321,10 +308,6 @@ function apply_clifford_gate_to_state!(state::CAMPSState, cg::CliffordGate)::CAM
     end
     return state
 end
-
-#==============================================================================#
-# PAULI OPERATOR UTILITIES
-#==============================================================================#
 
 """
     get_pauli_at(P::PauliOperator, j::Int) -> Symbol
@@ -457,10 +440,6 @@ function get_zbit_vector(P::PauliOperator)::BitVector
     return BitVector(zbit(P))
 end
 
-#==============================================================================#
-# CLIFFORD STATE QUERIES
-#==============================================================================#
-
 """
     clifford_nqubits(C::Destabilizer) -> Int
 
@@ -469,10 +448,6 @@ Get the number of qubits in a Clifford operator.
 function clifford_nqubits(C::Destabilizer)::Int
     return nqubits(C)
 end
-
-#==============================================================================#
-# PAULI STRING CREATION
-#==============================================================================#
 
 """
     create_pauli_string(paulis::Vector{Symbol}, n::Int) -> PauliOperator
@@ -536,10 +511,6 @@ function create_pauli_string_with_phase(paulis::Vector{Symbol}, n::Int, phase::C
     phase_byte = complex_to_phase(phase)
     return PauliOperator(phase_byte, BitVector(xbits), BitVector(zbits))
 end
-
-#==============================================================================#
-# DEBUGGING utils... note: check on this!
-#==============================================================================#
 
 """
     pauli_to_string(P::PauliOperator) -> String

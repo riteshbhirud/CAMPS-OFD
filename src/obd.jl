@@ -1,5 +1,4 @@
 
-
 """
     PauliExpectations
 
@@ -27,7 +26,7 @@ const INDEX_TO_PAULI = [:I, :X, :Y, :Z]
 
 Precomputed mapping of how a Clifford transforms (σ₁⊗I) for the 4 Paulis.
 
-For OBD, we need U†(σ₁⊗I)U for each σ₁ ∈ {I, X, Y, Z}.
+For OBD, U†(σ₁⊗I)U is needed for each σ₁ ∈ {I, X, Y, Z}.
 Since U is Clifford, U†PU = ±Q for some Pauli Q.
 
 Stores:
@@ -207,7 +206,7 @@ Evaluate the second Rényi entropy after applying a Clifford, using precomputed 
 For ρ' = UρU† and ρ₁ = Tr₂(ρ'):
     Tr(ρ₁²) = (1/2) Σ_{σ₁∈{I,X,Y,Z}} |⟨U†(σ₁⊗I)U⟩_ρ|²
 
-Since U†(σ₁⊗I)U = phase × (τ₁⊗τ₂), we have:
+Since U†(σ₁⊗I)U = phase × (τ₁⊗τ₂), this gives:
     ⟨U†(σ₁⊗I)U⟩_ρ = phase × ⟨τ₁⊗τ₂⟩_ρ
 
 And |phase|² = 1, so:
@@ -276,10 +275,6 @@ function find_optimal_clifford_fast(expectations::PauliExpectations,
 
     return (best_idx, best_entropy)
 end
-
-#==============================================================================#
-# EQUATION 19: EXACT TENSOR CONTRACTION APPROACH (Liu & Clark Section IV.A)
-#==============================================================================#
 
 """
     Renyi2BaseTensor
@@ -528,10 +523,6 @@ function find_optimal_clifford_equation19(base_tensor::Renyi2BaseTensor,
     return (best_idx, best_entropy)
 end
 
-#==============================================================================#
-# OBD SINGLE BOND OPTIMIZATION
-#==============================================================================#
-
 """
     OBDAlgorithm
 
@@ -605,9 +596,7 @@ function find_optimal_clifford_for_bond(mps::MPS, bond::Int, sites::AbstractVect
 
     effective_algorithm = use_fast_algorithm ? algorithm : :naive
 
-    #==========================================================================
-    # EQUATION 19: Exact tensor contraction (Liu & Clark Section IV.A)
-    ==========================================================================#
+    ==========================================================================
 
     if effective_algorithm == :equation19 && use_full_search
         base_tensor = precompute_renyi2_base_tensor(mps, bond, sites)
@@ -624,9 +613,7 @@ function find_optimal_clifford_for_bond(mps::MPS, bond::Int, sites::AbstractVect
         return (best_index, initial_entropy, best_entropy)
     end
 
-    #==========================================================================
-    # PAULI-BASIS: Fast O(4) per-Clifford evaluation
-    ==========================================================================#
+    ==========================================================================
 
     rho = extract_two_site_rdm(mps, site1, site2)
 
@@ -644,9 +631,7 @@ function find_optimal_clifford_for_bond(mps::MPS, bond::Int, sites::AbstractVect
         return (best_index, initial_entropy, best_entropy)
     end
 
-    #==========================================================================
-    # FALLBACK: Original algorithm (for representatives or when fast disabled)
-    ==========================================================================#
+    ==========================================================================
 
     if use_full_search
         if cache !== nothing
@@ -750,10 +735,6 @@ function apply_clifford_index_to_mps!(mps::MPS, clifford_index::Int, site1::Int,
     return apply_two_qubit_gate!(mps, gate, site1, site2; max_bond=max_bond, cutoff=cutoff)
 end
 
-#==============================================================================#
-# OBD SWEEP
-#==============================================================================#
-
 """
     OBDSweepResult
 
@@ -800,7 +781,7 @@ Perform a single OBD sweep over all bonds.
 Sweep through bonds, optimizing each one:
 1. Find optimal Clifford U for each bond
 2. Apply U to MPS: |ψ⟩ → U|ψ⟩
-3. Update Clifford: C → C·U† (since we want U†·C·|ψ⟩ = C'·|ψ'⟩)
+3. Update Clifford: C → C·U† (so that U†·C·|ψ⟩ = C'·|ψ'⟩)
 """
 function obd_sweep!(mps::MPS, sites::AbstractVector, clifford::Destabilizer;
                     use_full_search::Bool=false,
@@ -870,7 +851,7 @@ end
 
 Apply a two-qubit Clifford via RIGHT MULTIPLICATION to the accumulated Destabilizer.
 
-When we apply U to the MPS (|mps'⟩ = U|mps⟩), we need to update the Clifford
+When U is applied to the MPS (|mps'⟩ = U|mps⟩), the Clifford must be updated
 as D_new = D · U† to preserve the physical state:
     D_new |mps'⟩ = D · U† · U |mps⟩ = D |mps⟩
 
@@ -942,7 +923,7 @@ Uses the canonical decomposition:
     C = (L₁ ⊗ L₂) · E · (R₁ ⊗ R₂)
 where L₁, L₂, R₁, R₂ are single-qubit Cliffords and E is an entangling gate.
 
-We use stabilizer tableau comparison for exact matching.
+Uses stabilizer tableau comparison for exact matching.
 """
 function decompose_two_qubit_clifford(C::CliffordOperator, q1::Int, q2::Int)::Vector
     if haskey(TWO_QUBIT_CLIFFORD_DECOMPOSITION_CACHE, C)
@@ -1340,10 +1321,6 @@ end
 
 const TWO_QUBIT_CLIFFORD_DECOMPOSITION_CACHE = Dict{CliffordOperator, Vector}()
 
-#==============================================================================#
-# FULL OBD ALGORITHM
-#==============================================================================#
-
 """
     OBDResult
 
@@ -1456,10 +1433,6 @@ function obd!(state::CAMPSState; max_sweeps::Int=10,
     )
 end
 
-#==============================================================================#
-# OBD FOR ROTATION GATES (FALLBACK FROM OFD)
-#==============================================================================#
-
 """
     apply_rotation_with_obd!(state::CAMPSState, P_twisted::PauliOperator, θ::Real;
                               obd_sweeps::Int=2,
@@ -1500,10 +1473,6 @@ function apply_rotation_with_obd!(state::CAMPSState, P_twisted::PauliOperator, �
 
     return state
 end
-
-#==============================================================================#
-# HYBRID OFD/OBD APPLICATION
-#==============================================================================#
 
 """
     apply_rotation_hybrid!(state::CAMPSState, axis::Symbol, qubit::Int, θ::Real;
@@ -1612,10 +1581,6 @@ function apply_tdag_gate_hybrid!(state::CAMPSState, qubit::Int;
                                   strategy::DisentanglingStrategy=HybridStrategy())::CAMPSState
     return apply_rotation_hybrid!(state, :Z, qubit, -π/4; strategy=strategy)
 end
-
-#==============================================================================#
-# BOND ENTROPY UTILITIES
-#==============================================================================#
 
 """
     get_entropy_profile(state::CAMPSState) -> Vector{Float64}

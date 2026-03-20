@@ -11,6 +11,7 @@ using CAMPS
         include("test_clifford_interface.jl")
         include("test_mps_interface.jl")
         include("test_gf2.jl")
+        include("test_gf2_circuit_analysis.jl")
     end
 
     @testset "Phase 2: Integration" begin
@@ -25,5 +26,13 @@ using CAMPS
     @testset "Phase 4: Simulation" begin
         include("test_simulation.jl")
         include("test_phase4.jl")
+    end
+
+    @testset "Phase 5: Mathematical Properties" begin
+        include("test_mathematical_properties.jl")
+    end
+
+    @testset "Phase 6: End-to-End Correctness" begin
+        include("test_correctness.jl")
     end
 end

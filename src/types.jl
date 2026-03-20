@@ -1,6 +1,3 @@
-#==============================================================================#
-#                         DISENTANGLING STRATEGIES                             #
-#==============================================================================#
 
 """
     DisentanglingStrategy
@@ -86,7 +83,7 @@ the universality of OBD (when OFD cannot be applied).
 - Recommended default strategy for general use
 
 # When to use
-- Default choice for production use
+- Default choice for general use
 - When circuit structure is unknown a priori
 """
 struct HybridStrategy <: DisentanglingStrategy
@@ -115,10 +112,6 @@ bond dimension grows as 2^t where t is the number of non-Clifford gates.
 - When bond dimension growth is acceptable
 """
 struct NoDisentangling <: DisentanglingStrategy end
-
-#==============================================================================#
-#                              GATE TYPES                                      #
-#==============================================================================#
 
 """
     Gate
@@ -215,10 +208,6 @@ struct RotationGate <: Gate
     end
 end
 
-#==============================================================================#
-#                       GATE CONVENIENCE CONSTRUCTORS                          #
-#==============================================================================#
-
 """
     TGate(qubit::Int) -> RotationGate
 
@@ -265,10 +254,6 @@ Create an Ry(θ) rotation gate on the specified qubit.
 Ry(θ) = exp(-iθY/2) = cos(θ/2)I - i sin(θ/2)Y
 """
 RyGate(qubit::Int, θ::Real) = RotationGate(qubit, :Y, Float64(θ))
-
-#==============================================================================#
-#                       CLIFFORD GATE CONSTRUCTORS                             #
-#==============================================================================#
 
 """
     HGate(qubit::Int) -> CliffordGate
@@ -442,10 +427,8 @@ function iSWAPGate(qubit1::Int, qubit2::Int)
     CliffordGate([
         (:S, qubit1),
         (:S, qubit2),
-        (:CNOT, qubit1, qubit2),
-        (:CNOT, qubit2, qubit1),
-        (:S, qubit1),
-        (:S, qubit2)
+        (:CZ, qubit1, qubit2),
+        (:SWAP, qubit1, qubit2)
     ], [qubit1, qubit2])
 end
 
@@ -460,7 +443,7 @@ Used in Surface Code circuits for X-type stabilizer measurements.
 Transforms:
 - X_c → X_c
 - Z_c → Z_c X_t
-- X_t → X_c X_t
+- X_t → X_t
 - Z_t → Z_t
 
 # Example
@@ -512,9 +495,11 @@ end
 """
     SqrtYGate(qubit::Int) -> CliffordGate
 
-Create a √Y gate (Ry(π/2)) on the specified qubit.
+Create a √Y gate on the specified qubit.
 
-√Y = (1/√2)(I - iY) = S · H · S
+√Y = S · H · S (satisfies (√Y)² = iY, i.e. √Y is a square root of Y up to global phase)
+
+Pauli conjugation: X → X, Y → -Z, Z → Y
 
 # Example
 ```julia
@@ -528,9 +513,11 @@ end
 """
     SqrtYdagGate(qubit::Int) -> CliffordGate
 
-Create a √Y† gate (Ry(-π/2)) on the specified qubit.
+Create a √Y† gate (inverse of SqrtYGate) on the specified qubit.
 
-√Y† = (1/√2)(I + iY) = S† · H · S†
+√Y† = S† · H · S† (inverse of S · H · S)
+
+Pauli conjugation: X → X, Y → Z, Z → -Y
 
 # Example
 ```julia
@@ -540,10 +527,6 @@ sqrtydag = SqrtYdagGate(1)  # √Y† on qubit 1
 function SqrtYdagGate(qubit::Int)
     CliffordGate([(:Sdag, qubit), (:H, qubit), (:Sdag, qubit)], [qubit])
 end
-
-#==============================================================================#
-#                              CAMPS STATE                                     #
-#==============================================================================#
 
 """
     CAMPSState
@@ -555,8 +538,8 @@ Represents a quantum state as: |ψ⟩ = C · |mps⟩
 where C is a Clifford operator (tracked via QuantumClifford.jl's Destabilizer)
 and |mps⟩ is the coefficient MPS (stored via ITensorMPS.jl's MPS).
 
-We use Destabilizer (not MixedDestabilizer) because:
-1. We're tracking a Clifford unitary, which is always full-rank
+Uses Destabilizer (not MixedDestabilizer) because:
+1. The tracked Clifford unitary is always full-rank
 2. Destabilizer can be converted to CliffordOperator for Pauli conjugation
 3. MixedDestabilizer is meant for mixed states, not unitary tracking
 
@@ -634,10 +617,6 @@ mutable struct CAMPSState
     end
 end
 
-#==============================================================================#
-#                     ACCESSOR FUNCTIONS FOR CAMPSState                        #
-#==============================================================================#
-
 """
     n_qubits(state::CAMPSState) -> Int
 
@@ -712,10 +691,6 @@ get_free_qubit_indices(state::CAMPSState) = findall(state.free_qubits)
 Return indices of all magic qubits.
 """
 get_magic_qubit_indices(state::CAMPSState) = findall(state.magic_qubits)
-
-#==============================================================================#
-#                              TYPE DISPLAY                                    #
-#==============================================================================#
 
 function Base.show(io::IO, ::OFDStrategy)
     print(io, "OFDStrategy()")

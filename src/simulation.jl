@@ -106,10 +106,6 @@ function rotation_to_clifford(gate::RotationGate)::Union{CliffordGate, Nothing}
     return nothing
 end
 
-#==============================================================================#
-# CIRCUIT SIMULATION
-#==============================================================================#
-
 """
     SimulationResult
 
@@ -240,21 +236,21 @@ function simulate_circuit(circuit::Vector{<:Gate}, n_qubits::Int;
     )
 end
 
-#==============================================================================#
-# OBSERVABLE EXTRACTION
-#==============================================================================#
-
 """
     sample_state(state::CAMPSState; num_samples::Int=1) -> Vector{Vector{Int}}
 
-Sample computational basis states from a CAMPS state |ψ⟩ = C|mps⟩.
+Sample computational basis states from a CAMPS state |ψ⟩ = C|φ⟩.
 
-This properly accounts for the Clifford transformation:
-1. Sample from |mps⟩ to get basis state |m⟩
-2. Apply C to get the actual sampled state C|m⟩
+The correct sampling procedure is:
+1. Sample |m⟩ from the MPS |φ⟩ (outcome m with probability |⟨m|φ⟩|²)
+2. Apply the Clifford C to get the physical outcome: b = C|m⟩
 
-For computational basis measurements, sampling from |mps⟩ gives the correct
-distribution because |⟨b|C|mps⟩|² sums correctly over the unitary C.
+For small systems (n ≤ 12), this builds the full state vector |ψ⟩ = C|φ⟩
+and samples from the Born probability distribution P(b) = |⟨b|ψ⟩|².
+
+For large systems (n > 12), this falls back to sampling from the MPS |φ⟩
+directly (without the Clifford transformation), which is only correct when
+the Clifford frame is trivial (identity).
 
 # Arguments
 - `state::CAMPSState`: CAMPS state
@@ -262,15 +258,37 @@ distribution because |⟨b|C|mps⟩|² sums correctly over the unitary C.
 
 # Returns
 - `Vector{Vector{Int}}`: Sampled bitstrings (computational basis outcomes)
-
-# Note
-For CAMPS, we sample from the MPS directly. The Clifford C transforms the
-measurement basis but doesn't change the distribution of outcomes when
-measuring in the computational basis (since C is unitary).
 """
 function sample_state(state::CAMPSState; num_samples::Int=1)::Vector{Vector{Int}}
     ensure_initialized!(state)
-    return sample_mps_multiple(state.mps, num_samples)
+    n = state.n_qubits
+
+    if n > 12
+        @warn "sample_state for n > 12 returns raw MPS samples without Clifford transformation" maxlog=1
+        return sample_mps_multiple(state.mps, num_samples)
+    end
+
+    psi = state_vector(state)
+    dim = 2^n
+
+    probs = abs2.(psi)
+    total = sum(probs)
+    if total < 1e-14
+        error("State has zero norm — cannot sample")
+    end
+    probs ./= total
+
+    cumprobs = cumsum(probs)
+
+    result = Vector{Vector{Int}}(undef, num_samples)
+    for s in 1:num_samples
+        r = rand()
+        idx = searchsortedfirst(cumprobs, r)
+        idx = clamp(idx, 1, dim)
+        result[s] = [(idx - 1) >> j & 1 for j in 0:(n-1)]
+    end
+
+    return result
 end
 
 """
@@ -306,29 +324,7 @@ The transformed stabilizers determine a unique computational basis state.
 function apply_clifford_to_basis_state(C::Destabilizer, bitstring::Vector{Int})::Tuple{Vector{Int}, ComplexF64}
     n = nqubits(C)
     length(bitstring) == n || throw(ArgumentError("Bitstring length must match Clifford size"))
-
-    C_op = CliffordOperator(C)
-    C_inv = inv(C_op)
-
-    output_bits = zeros(Int, n)
-    total_phase = ComplexF64(1.0)
-
-    for j in 1:n
-        Z_j = single_z(n, j)
-
-        if bitstring[j] == 1
-            Z_j = PauliOperator(0x02, xbit(Z_j), zbit(Z_j))
-        end
-
-        stab = Stabilizer([Z_j])
-        apply!(stab, C_inv)
-        P_transformed = stab[1]
-
-    end
-
-    output_bits, total_phase = compute_clifford_action_on_basis_state(C, bitstring)
-
-    return (output_bits, total_phase)
+    return compute_clifford_action_on_basis_state(C, bitstring)
 end
 
 """
@@ -336,14 +332,14 @@ end
 
 Compute C†|b⟩ for a Clifford C and computational basis state |b⟩.
 
-For CAMPS amplitude computation, we need to compute ⟨b|C|mps⟩ = (⟨b|C)·|mps⟩.
+For CAMPS amplitude computation, ⟨b|C|mps⟩ = (⟨b|C)·|mps⟩ is needed.
 Since C is Clifford and |b⟩ is a computational basis state, C†|b⟩ is another
 computational basis state times a Pauli phase.
 
-**Key insight**: Rather than trying to compute C†|b⟩ symbolically (which is
-complex for general Cliffords), we use the Clifford matrix representation
-for small systems. For larger systems, we note that in CAMPS the amplitude
-computation can be done by going back to the MPS directly since the MPS
+**Key insight**: Rather than computing C†|b⟩ symbolically (which is
+complex for general Cliffords), the Clifford matrix representation is used
+for small systems. For larger systems, the CAMPS amplitude
+computation can be done via the MPS directly since the MPS
 already has the non-trivial state information.
 
 # Method
@@ -444,35 +440,17 @@ The phase is always ±1 or ±i (a Pauli phase: i^k for k ∈ {0,1,2,3}).
 function compute_clifford_phase_on_basis(C::Destabilizer, input::Vector{Int}, output::Vector{Int})::ComplexF64
     n = nqubits(C)
 
-    if n <= 6
-        C_mat = clifford_to_matrix(CliffordOperator(C))
-        C_inv_mat = C_mat'
-
-        idx_in = sum(input[j] * 2^(j-1) for j in 1:n) + 1
-        idx_out = sum(output[j] * 2^(j-1) for j in 1:n) + 1
-
-        phase = C_inv_mat[idx_out, idx_in]
-
-        return phase
+    if n > 12
+        throw(ArgumentError("compute_clifford_phase_on_basis only supported for n ≤ 12 (got n=$n)"))
     end
 
-    C_op = CliffordOperator(C)
-    C_inv = inv(C_op)
+    C_mat = clifford_to_matrix(CliffordOperator(C))
+    C_inv_mat = C_mat'
 
-    accumulated_phase = ComplexF64(1.0)
+    idx_in = sum(input[j] * 2^(j-1) for j in 1:n) + 1
+    idx_out = sum(output[j] * 2^(j-1) for j in 1:n) + 1
 
-    for j in 1:n
-        if input[j] == 1
-            X_j = single_x(n, j)
-            stab = Stabilizer([X_j])
-            apply!(stab, C_inv)
-            P_transformed = stab[1]
-
-            accumulated_phase *= get_pauli_phase(P_transformed)
-        end
-    end
-
-    return accumulated_phase
+    return C_inv_mat[idx_out, idx_in]
 end
 
 """
@@ -486,7 +464,7 @@ For CAMPS state |ψ⟩ = C|mps⟩:
 
 where C_{bj} = ⟨b|C|j⟩ is the matrix element of the Clifford unitary.
 
-For small systems (n ≤ 12), we compute this using the Clifford matrix.
+For small systems (n ≤ 12), this is computed using the Clifford matrix.
 For larger systems, a stabilizer-based algorithm would be needed.
 
 # Arguments
@@ -558,10 +536,6 @@ Compute the probability |⟨bitstring|ψ⟩|² for a CAMPS state.
 function probability(state::CAMPSState, bitstring::Vector{Int})::Float64
     return abs2(amplitude(state, bitstring))
 end
-
-#==============================================================================#
-# STATE VECTOR EXTRACTION (for small systems)
-#==============================================================================#
 
 """
     state_vector(state::CAMPSState) -> Vector{ComplexF64}
@@ -656,10 +630,6 @@ function state_vector_sparse(state::CAMPSState; threshold::Float64=1e-14)::Dict{
     return result
 end
 
-#==============================================================================#
-# FIDELITY AND STATE COMPARISON
-#==============================================================================#
-
 """
     fidelity(state1::CAMPSState, state2::CAMPSState) -> Float64
 
@@ -750,10 +720,11 @@ end
     fidelity_sampling(state1::CAMPSState, state2::CAMPSState;
                       num_samples::Int=10000) -> Float64
 
-Estimate fidelity using importance sampling.
+Estimate fidelity using the squared Bhattacharyya coefficient.
 
-Uses the SWAP test idea: sample from one state and evaluate probability
-on the other state.
+Computes B² = (Σ_m √(p₁(m)p₂(m)))² via importance sampling from state 1.
+This equals the true fidelity |⟨ψ₁|ψ₂⟩|² when both states have
+all-real non-negative amplitudes, and is a lower bound in general.
 
 # Arguments
 - `state1::CAMPSState`: First state
@@ -846,10 +817,6 @@ function normalize!(state::CAMPSState)::CAMPSState
     normalize_mps!(state.mps)
     return state
 end
-
-#==============================================================================#
-# STANDARD CIRCUIT GENERATORS
-#==============================================================================#
 
 """
     qft_circuit(n::Int) -> Vector{Gate}
@@ -1140,7 +1107,7 @@ end
 """
     expectation_value_z(state::CAMPSState, qubit::Int) -> Float64
 
-Compute ⟨Z_qubit⟩ efficiently.
+Compute ⟨Z_qubit⟩.
 
 # Arguments
 - `state::CAMPSState`: CAMPS state
@@ -1157,7 +1124,7 @@ end
 """
     expectation_value_x(state::CAMPSState, qubit::Int) -> Float64
 
-Compute ⟨X_qubit⟩ efficiently.
+Compute ⟨X_qubit⟩.
 
 # Arguments
 - `state::CAMPSState`: CAMPS state
@@ -1174,7 +1141,7 @@ end
 """
     expectation_value_y(state::CAMPSState, qubit::Int) -> Float64
 
-Compute ⟨Y_qubit⟩ efficiently.
+Compute ⟨Y_qubit⟩.
 
 # Arguments
 - `state::CAMPSState`: CAMPS state
@@ -1187,10 +1154,6 @@ function expectation_value_y(state::CAMPSState, qubit::Int)::Float64
     P = single_y(state.n_qubits, qubit)
     return real(expectation_value(state, P))
 end
-
-#==============================================================================#
-# RANDOM CIRCUIT GENERATION
-#==============================================================================#
 
 """
     random_clifford_t_circuit(n_qubits::Int, n_t_gates::Int;
@@ -1315,10 +1278,6 @@ function random_brickwork_circuit(n_qubits::Int, n_layers::Int, t_probability::F
     return circuit
 end
 
-#==============================================================================#
-# CIRCUIT ANALYSIS
-#==============================================================================#
-
 """
     analyze_circuit(circuit::Vector{<:Gate}, n_qubits::Int) -> NamedTuple
 
@@ -1432,10 +1391,6 @@ function predict_bond_dimension_for_circuit(circuit::Vector{<:Gate}, n_qubits::I
         nullity = analysis.nullity
     )
 end
-
-#==============================================================================#
-# DISPLAY UTILITIES
-#==============================================================================#
 
 function Base.show(io::IO, result::SimulationResult)
     print(io, "SimulationResult(")
